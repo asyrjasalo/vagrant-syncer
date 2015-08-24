@@ -1,15 +1,9 @@
-module VagrantPlugins
+module Vagrant
   module Rsyncer
-    module Errors
 
-      class RsyncerError < Vagrant::Errors::VagrantError
-        error_namespace("rsyncer.errors")
-      end
-
-      class ConfigNotFound < RsyncerError
-        error_key :config_not_found
-      end
-
+    class Error < Errors::VagrantError
+      error_namespace("rsyncer.errors")
     end
+
   end
 end
