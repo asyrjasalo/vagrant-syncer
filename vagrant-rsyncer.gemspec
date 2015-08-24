@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'vagrant/rsyncer/version'
+require 'rsyncer/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "vagrant-rsyncer"
-  spec.version       = Vagrant::Rsyncer::VERSION
+  spec.version       = VagrantPlugins::Rsyncer::VERSION
   spec.authors       = ["Anssi Syrjäsalo"]
   spec.email         = ["anssi.syrjasalo@gmail.com"]
 
