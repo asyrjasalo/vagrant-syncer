@@ -1,0 +1,14 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = 'ubuntu1504'
+
+  config.vm.synced_folder '.', 'vagrant/', disabled: true
+  config.rsyncer.path = "rsyncerd.json"
+
+  config.ssh.username = 'vagrant'
+  config.ssh.forward_agent = true
+
+  config.vm.network 'private_network', type: 'dhcp'
+end

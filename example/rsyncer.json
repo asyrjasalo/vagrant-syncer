@@ -1,0 +1,25 @@
+{
+  "paths": {
+    "source": "files/",
+    "target": "/home/vagrant/files"
+  },
+  "continuous": true,
+  "latency": 0.1,
+  "target": {
+    "user": "vagrant",
+    "group": "vagrant",
+    "permissions": "--chmod=u=rwX --chmod=g=rX --chmod=o="
+  },
+  "args": {
+    "rsync": {
+      "initial": "-a -z --delete --force --inplace",
+      "continuous": "-a --delete --force --inplace"
+    },
+    "ssh": "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -c arcfour"
+  },
+  "excludes": [
+    "excluded_file.txt",
+    "directory/excluded_directory",
+    "glob_excluded_file*"
+  ]
+}
