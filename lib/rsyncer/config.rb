@@ -9,14 +9,29 @@ module VagrantPlugins
       end
 
       def finalize!
+        # set defaults
       end
 
       def validate(machine)
-        begin
-          config_file = File.read(machine.config.rsyncer.path)
-        rescue Errno::ENOENT
-          raise Errors::ConfigNotFound
+        errors = _detected_errors
+
+        config_path = machine.config.rsyncer.path
+        if config_path == UNSET_VALUE
+          errors << "Config file not given."
+        else
+          begin
+            config_file = File.read(config_path)
+            config_json = JSON.parse(config_file)
+
+            puts config_json
+          rescue Errno::ENOENT
+            errors << "Config file '#{config_path}' not found."
+          rescue JSON::ParserError
+            errors << "Config file not valid JSON."
+          end
         end
+
+        { "rsyncer" => errors }
       end
 
     end
