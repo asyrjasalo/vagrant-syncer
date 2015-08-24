@@ -1,4 +1,6 @@
 en:
   rsyncer:
+    info:
+      started: Rsyncer started.
     errors:
       config_not_found: Rsyncer config file not found.

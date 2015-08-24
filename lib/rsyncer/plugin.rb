@@ -24,6 +24,11 @@ module VagrantPlugins
         Command
       end
 
+      action_hook "initial-rsync" do |hook|
+        require_relative "initial_rsync"
+        hook.after Vagrant::Action::Builtin::SyncedFolders, InitialRsync
+      end
+
     end
   end
 end
