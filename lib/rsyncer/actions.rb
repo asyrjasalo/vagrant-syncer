@@ -10,14 +10,12 @@ module Vagrant
       class Up < Base
         def call(env)
           # TODO: Start rsyncer
-          # @machine.env.cli("rsyncer start")
         end
       end
 
       class Halt < Base
         def call(env)
           # TODO: Stop rsyncer
-          # @machine.env.cli("rsyncer halt")
         end
       end
 

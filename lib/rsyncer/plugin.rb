@@ -4,7 +4,7 @@ module Vagrant
 
       name "Rsyncer"
       description <<-DESC
-      Continuously rsyncs the changed files to the guest.
+      Monitors host filesystem events and continuously rsyncs files to the guest.
       DESC
 
       config "rsyncer" do

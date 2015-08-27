@@ -1,7 +1,7 @@
 begin
   require "vagrant"
 rescue LoadError
-  raise "This plugin must be run within Vagrant"
+  raise "This plugin must be run within Vagrant."
 end
 
 require 'rsyncer/version'
