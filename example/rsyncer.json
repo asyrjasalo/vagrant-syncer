@@ -1,21 +1,32 @@
 {
-  "paths": {
-    "source": "files/",
-    "target": "/home/vagrant/files"
-  },
-  "latency": 0.1,
   "verbose": false,
-  "target": {
-    "user": "vagrant",
-    "group": "vagrant",
-    "permissions": ["--chmod=u=rwX", "--chmod=g=rX", "--chmod=o="]
-  },
   "args": {
-    "rsync": ["-a", "--delete", "--force", "--inplace"]
+    "rsync": ["-a", "--delete", "--delete-excluded", "--force", "--inplace"],
+    "ssh": ["-o StrictHostKeyChecking=no", "-o UserKnownHostsFile=/dev/null", "-c arcfour"]
   },
-  "excludes": [
-    "excluded_file.txt",
-    "directory/excluded_directory",
-    "glob_excluded_file*"
+  "paths": [
+    {
+      "source": {
+        "watch": true,
+        "latency": 0.1,
+        "path": "files/",
+        "excludes": [
+          "excluded_file.txt",
+          "directory/excluded_directory",
+          "*glob_excluded_file*",
+          "*glob_excluded_directory"
+        ]
+      },
+      "target": {
+        "path": "/home/vagrant/files",
+        "user": "vagrant",
+        "group": "vagrant",
+        "permissions": {
+          "user": "rwX",
+          "group": "rX",
+          "other": ""
+        }
+      }
+    }
   ]
 }
