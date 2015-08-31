@@ -32,15 +32,17 @@ module Vagrant
 
         verbose = machine.config.rsyncer.settings['verbose']
         rsync_args = machine.config.rsyncer.settings['args']['rsync']
+        ssh_args = machine.config.rsyncer.settings['args']['ssh']
 
         machine.config.rsyncer.settings['paths'].each do |path|
           path_opts = {}
           path_opts[:hostpath] = File.expand_path(path['source']['path'], machine.env.root_path)
           path_opts[:guestpath] = path['target']['path']
-          path_opts[:owner] = path['target']['user']
+          path_opts[:owner] = path['target']['owner']
           path_opts[:group] = path['target']['group']
           path_opts[:exclude] = path['source']['excludes']
           path_opts[:args] = rsync_args
+          path_opts[:ssh_args] = ssh_args
           path_opts[:verbose] = verbose
 
           if path['target']['permissions']

@@ -4,7 +4,6 @@ require "vagrant/util/subprocess"
 module Vagrant
   module Rsyncer
     class Rsyncer
-
       def self.rsync_single(machine, ssh_info, opts)
         guestpath = opts[:guestpath]
         hostpath  = opts[:hostpath]
@@ -12,21 +11,14 @@ module Vagrant
         hostpath  = Vagrant::Util::Platform.fs_real_path(hostpath).to_s
 
         if Vagrant::Util::Platform.windows?
-          # rsync for Windows expects cygwin style paths, always.
           hostpath = Vagrant::Util::Platform.cygwin_path(hostpath)
         end
 
+        # prevent creating directory inside directory
         if File.directory?(hostpath) && !hostpath.end_with?("/")
           hostpath += "/"
         end
 
-        # Folder options
-        opts[:owner] ||= ssh_info[:username]
-        opts[:group] ||= ssh_info[:username]
-
-        # Connection information
-        username = ssh_info[:username]
-        host     = ssh_info[:host]
         proxy_command = ""
         if ssh_info[:proxy_command]
           proxy_command = "-o ProxyCommand='#{ssh_info[:proxy_command]}' "
@@ -35,14 +27,10 @@ module Vagrant
         rsh = [
           "ssh -p #{ssh_info[:port]} " +
           proxy_command +
-          "-o StrictHostKeyChecking=no " +
-          "-o IdentitiesOnly=true " +
-          "-o UserKnownHostsFile=/dev/null",
+          opts[:ssh_args].join(' '),
           ssh_info[:private_key_path].map { |p| "-i '#{p}'" },
-        ].flatten.join(" ")
+        ].flatten.join(' ')
 
-        # Exclude some files by default, and any that might be configured
-        # by the user.
         excludes = ['.vagrant/']
         excludes += Array(opts[:exclude]).map(&:to_s) if opts[:exclude]
         excludes.uniq!
@@ -84,7 +72,7 @@ module Vagrant
           "-e", rsh,
           excludes.map { |e| ["--exclude", e] },
           hostpath,
-          "#{username}@#{host}:#{guestpath}",
+          "#{ssh_info[:username]}@#{ssh_info[:host]}:#{guestpath}",
         ].flatten
 
         # The working directory should be the root path
@@ -123,6 +111,9 @@ module Vagrant
             hostpath: hostpath,
             stderr: r.stderr
         end
+
+        opts[:owner] ||= ssh_info[:username]
+        opts[:group] ||= ssh_info[:username]
 
         # If we have tasks to do after rsyncing, do those.
         if machine.guest.capability?(:rsync_post)

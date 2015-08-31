@@ -2,7 +2,7 @@
   "verbose": false,
   "args": {
     "rsync": ["-a", "--delete", "--delete-excluded", "--force", "--inplace"],
-    "ssh": ["-o StrictHostKeyChecking=no", "-o UserKnownHostsFile=/dev/null", "-c arcfour"]
+    "ssh": ["-o StrictHostKeyChecking=no", "-o UserKnownHostsFile=/dev/null"]
   },
   "paths": [
     {
@@ -19,7 +19,7 @@
       },
       "target": {
         "path": "/home/vagrant/files",
-        "user": "vagrant",
+        "owner": "vagrant",
         "group": "vagrant",
         "permissions": {
           "user": "rwX",
