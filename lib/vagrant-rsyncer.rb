@@ -9,6 +9,7 @@ require 'rsyncer/errors'
 require 'rsyncer/plugin'
 require 'rsyncer/actions'
 require 'rsyncer/command'
+require 'rsyncer/rsyncer'
 
 module Vagrant
   module Rsyncer

@@ -9,7 +9,7 @@
       "source": {
         "watch": true,
         "latency": 0.1,
-        "path": "files/",
+        "path": "files",
         "excludes": [
           "excluded_file.txt",
           "directory/excluded_directory",
