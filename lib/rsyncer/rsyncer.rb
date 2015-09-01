@@ -6,14 +6,66 @@ module Vagrant
     class Rsyncer
 
       def initialize(path, machine)
-        @path = path
         @machine = machine
+        @logger = machine.ui
+        @host_path = parse_host_path(path[:source][:path])
+        @guest_path = path[:target][:path]
+        @exclude_args = parse_exclude_args(path[:source][:excludes])
+        @owner_user = path[:target][:user]
+        @owner_group = path[:target][:group]
+        @ssh_username = machine.ssh_info[:username]
+        @ssh_host = machine.ssh_info[:host]
+        @ssh_command = parse_ssh_command(path[:target][:args][:ssh])
+        @rsync_args = parse_rsync_args(path[:target][:args][:rsync])
+        @command_opts = { workdir: machine.env.root_path.to_s }
       end
 
       def sync(includes=nil)
-        # host path
-        host_path = @path[:source][:path]
-        host_path = File.expand_path(host_path, @machine.env.root_path)
+        includes ||= [@host_path]
+
+        command = [
+          "rsync",
+          @rsync_args,
+          "-e", @ssh_command,
+          includes.map { |path| ["--include", path] },
+          @exclude_args,
+          @host_path,
+          "#{@ssh_username}@#{@ssh_host}:#{@guest_path}",
+        ].flatten
+
+        result = Vagrant::Util::Subprocess.execute(*(command + [@command_opts]))
+        if result.exit_code != 0
+          @logger.error('Rsync failed: ' + result.stderr)
+          @logger.error('The executed command was: ' + command.join(' '))
+          return
+        end
+
+        @logger.info(result.stdout)  unless result.stdout.empty?
+        @logger.success('Synced: ' + includes.join(', '))
+
+        post_rsync_opts = {}
+        post_rsync_opts[:chown] = true
+
+        # TODO: chown only the changed file
+        post_rsync_opts[:guestpath] = @guest_path
+
+        post_rsync_opts[:owner] = @owner_user
+        post_rsync_opts[:group] = @owner_group
+
+        # default owner and group if not given by user
+        post_rsync_opts[:owner] ||= @ssh_username
+        # TODO: get user primary group over ssh
+        post_rsync_opts[:group] ||= @ssh_username
+
+        if @machine.guest.capability?(:rsync_post)
+          @machine.guest.capability(:rsync_post, post_rsync_opts)
+        end
+      end
+
+      private
+
+      def parse_host_path(source_path)
+        host_path = File.expand_path(source_path, @machine.env.root_path)
         host_path = Vagrant::Util::Platform.fs_real_path(host_path).to_s
         # Rsync on Windows expects Cygwin style paths
         if Vagrant::Util::Platform.windows?
@@ -23,14 +75,18 @@ module Vagrant
         if File.directory?(host_path) && !host_path.end_with?("/")
           host_path += "/"
         end
+        host_path
+      end
 
-        # includes, i.e. files to be synced
-        includes ||= [host_path]
+      def parse_exclude_args(excludes=nil)
+        excludes ||= []
+        excludes << '.vagrant/'
+        excludes.uniq.map { |e| ["--exclude", e] }
+      end
 
-        # guest path
-        guest_path = @path[:target][:path]
+      def parse_ssh_command(ssh_args=nil)
+        ssh_args ||= []
 
-        # ssh
         proxy_command = ""
         if @machine.ssh_info[:proxy_command]
           proxy_command = "-o ProxyCommand='#{@machine.ssh_info[:proxy_command]}' "
@@ -38,24 +94,14 @@ module Vagrant
         ssh_command = [
           "ssh -p #{@machine.ssh_info[:port]} " +
           proxy_command +
-          @path[:target][:args][:ssh].join(' '),
+          ssh_args.join(' '),
           @machine.ssh_info[:private_key_path].map { |p| "-i '#{p}'" },
         ].flatten.join(' ')
+      end
 
-        # excludes
-        excludes = ['.vagrant/']
-        if @path[:source][:excludes]
-          excludes += @path[:source][:excludes].map(&:to_s)
-          excludes.uniq!
-        end
-
-        # rsync args
-        if @path[:target][:args][:rsync]
-          rsync_args = @path[:target][:args][:rsync]
-        else
-          rsync_args = ["--verbose", "--archive", "--delete", "--compress",
-            "--copy-links"]
-        end
+      def parse_rsync_args(rsync_args=nil)
+        rsync_args ||= ["--verbose", "--archive", "--delete", "--compress",
+          "--copy-links"]
 
         # on Windows, set a default chmod flag to avoid permission issues
         if Vagrant::Util::Platform.windows? && !rsync_args.any? { |arg| arg.start_with?("--chmod=") }
@@ -80,49 +126,9 @@ module Vagrant
         rsync_command = @machine.guest.capability(:rsync_command)
         rsync_args << "--rsync-path"<< rsync_command  if rsync_command
 
-        # build up the full command to execute
-        command = [
-          "rsync",
-          rsync_args,
-          "-e", ssh_command,
-          includes.map { |path| ["--include", path] },
-          excludes.map { |e| ["--exclude", e] },
-          host_path,
-          "#{@machine.ssh_info[:username]}@#{@machine.ssh_info[:host]}:#{guest_path}",
-        ].flatten
-
-        command_opts = {}
-        command_opts[:workdir] = @machine.env.root_path.to_s
-
-        result = Vagrant::Util::Subprocess.execute(*(command + [command_opts]))
-        if result.exit_code != 0
-          @machine.ui.error('Rsync failed: ' + result.stderr)
-          @machine.ui.error('The executed command was: ' + command.join(' '))
-          return
-        end
-
-        @machine.ui.info(result.stdout)  unless result.stdout.empty?
-        @machine.ui.success('Synced: ' + includes.join(', '))
-
-        post_rsync_opts = {}
-        post_rsync_opts[:chown] = true
-
-        # TODO: chown only the changed file
-        post_rsync_opts[:guestpath] = @path[:target][:path]
-
-        post_rsync_opts[:owner] = @path[:target][:user]
-        post_rsync_opts[:group] = @path[:target][:group]
-
-        # default owner and group if not given by user
-        post_rsync_opts[:owner] ||= @machine.ssh_info[:username]
-        # TODO: get user primary group over ssh
-        post_rsync_opts[:group] ||= @machine.ssh_info[:username]
-
-        if @machine.guest.capability?(:rsync_post)
-          @machine.guest.capability(:rsync_post, post_rsync_opts)
-        end
-
+        rsync_args
       end
+
     end
   end
 end
