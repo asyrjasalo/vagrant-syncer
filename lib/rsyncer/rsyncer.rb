@@ -8,16 +8,29 @@ module Vagrant
       def initialize(path, machine)
         @machine = machine
         @logger = machine.ui
+
         @host_path = parse_host_path(path[:source][:path])
-        @guest_path = path[:target][:path]
-        @exclude_args = parse_exclude_args(path[:source][:excludes])
-        @owner_user = path[:target][:user]
-        @owner_group = path[:target][:group]
-        @ssh_username = machine.ssh_info[:username]
-        @ssh_host = machine.ssh_info[:host]
-        @ssh_command = parse_ssh_command(path[:target][:args][:ssh])
         @rsync_args = parse_rsync_args(path[:target][:args][:rsync])
-        @command_opts = { workdir: machine.env.root_path.to_s }
+        @ssh_command = parse_ssh_command(path[:target][:args][:ssh])
+        @exclude_args = parse_exclude_args(path[:source][:excludes])
+
+        ssh_username = machine.ssh_info[:username]
+        ssh_host = machine.ssh_info[:host]
+        guest_path = path[:target][:path]
+        @ssh_target = "#{ssh_username}@#{ssh_host}:#{guest_path}"
+
+        @vagrant_cmd_opts = {
+          workdir: machine.env.root_path.to_s
+        }
+        @vagrant_rsync_opts = {
+          guestpath: guest_path,
+          chown: true,
+          owner: path[:target][:user],
+          group: path[:target][:group]
+        }
+        @vagrant_rsync_opts[:owner] ||= ssh_username
+        # TODO: Get user's primary group over SSH
+        @vagrant_rsync_opts[:group] ||= ssh_username
       end
 
       def sync(includes=nil)
@@ -30,10 +43,14 @@ module Vagrant
           includes.map { |path| ["--include", path] },
           @exclude_args,
           @host_path,
-          "#{@ssh_username}@#{@ssh_host}:#{@guest_path}",
+          @ssh_target
         ].flatten
 
-        result = Vagrant::Util::Subprocess.execute(*(command + [@command_opts]))
+        if @machine.guest.capability?(:rsync_pre)
+          @machine.guest.capability(:rsync_pre, @vagrant_rsync_opts)
+        end
+
+        result = Vagrant::Util::Subprocess.execute(*(command + [@vagrant_cmd_opts]))
         if result.exit_code != 0
           @logger.error('Rsync failed: ' + result.stderr)
           @logger.error('The executed command was: ' + command.join(' '))
@@ -43,22 +60,8 @@ module Vagrant
         @logger.info(result.stdout)  unless result.stdout.empty?
         @logger.success('Synced: ' + includes.join(', '))
 
-        post_rsync_opts = {}
-        post_rsync_opts[:chown] = true
-
-        # TODO: chown only the changed file
-        post_rsync_opts[:guestpath] = @guest_path
-
-        post_rsync_opts[:owner] = @owner_user
-        post_rsync_opts[:group] = @owner_group
-
-        # default owner and group if not given by user
-        post_rsync_opts[:owner] ||= @ssh_username
-        # TODO: get user primary group over ssh
-        post_rsync_opts[:group] ||= @ssh_username
-
         if @machine.guest.capability?(:rsync_post)
-          @machine.guest.capability(:rsync_post, post_rsync_opts)
+          @machine.guest.capability(:rsync_post, @vagrant_rsync_opts)
         end
       end
 
