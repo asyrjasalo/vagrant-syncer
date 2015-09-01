@@ -6,7 +6,8 @@ Vagrant.configure(2) do |config|
 
   config.vm.synced_folder '.', 'vagrant/', disabled: true
 
-  config.rsyncer.settings = JSON.parse(File.read("rsyncer.json"))
+  config.rsyncer.settings = JSON.parse(File.read("rsyncer.json"),
+    symbolize_names: true)
 
   config.ssh.username = 'vagrant'
   config.ssh.forward_agent = true

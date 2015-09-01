@@ -4,121 +4,124 @@ require "vagrant/util/subprocess"
 module Vagrant
   module Rsyncer
     class Rsyncer
-      def self.rsync_single(machine, ssh_info, opts)
-        guestpath = opts[:guestpath]
-        hostpath  = opts[:hostpath]
-        hostpath  = File.expand_path(hostpath, machine.env.root_path)
-        hostpath  = Vagrant::Util::Platform.fs_real_path(hostpath).to_s
 
+      def initialize(path, machine)
+        @path = path
+        @machine = machine
+      end
+
+      def sync(includes=nil)
+        # host path
+        host_path = @path[:source][:path]
+        host_path = File.expand_path(host_path, @machine.env.root_path)
+        host_path = Vagrant::Util::Platform.fs_real_path(host_path).to_s
+        # Rsync on Windows expects Cygwin style paths
         if Vagrant::Util::Platform.windows?
-          hostpath = Vagrant::Util::Platform.cygwin_path(hostpath)
+          host_path = Vagrant::Util::Platform.cygwin_path(host_path)
         end
-
         # prevent creating directory inside directory
-        if File.directory?(hostpath) && !hostpath.end_with?("/")
-          hostpath += "/"
+        if File.directory?(host_path) && !host_path.end_with?("/")
+          host_path += "/"
         end
 
+        # includes, i.e. files to be synced
+        includes ||= [host_path]
+
+        # guest path
+        guest_path = @path[:target][:path]
+
+        # ssh
         proxy_command = ""
-        if ssh_info[:proxy_command]
-          proxy_command = "-o ProxyCommand='#{ssh_info[:proxy_command]}' "
+        if @machine.ssh_info[:proxy_command]
+          proxy_command = "-o ProxyCommand='#{@machine.ssh_info[:proxy_command]}' "
         end
-
-        rsh = [
-          "ssh -p #{ssh_info[:port]} " +
+        ssh_command = [
+          "ssh -p #{@machine.ssh_info[:port]} " +
           proxy_command +
-          opts[:ssh_args].join(' '),
-          ssh_info[:private_key_path].map { |p| "-i '#{p}'" },
+          @path[:target][:args][:ssh].join(' '),
+          @machine.ssh_info[:private_key_path].map { |p| "-i '#{p}'" },
         ].flatten.join(' ')
 
+        # excludes
         excludes = ['.vagrant/']
-        excludes += Array(opts[:exclude]).map(&:to_s) if opts[:exclude]
-        excludes.uniq!
-
-        # Get the command-line arguments
-        args = nil
-        args = Array(opts[:args]).dup if opts[:args]
-        args ||= ["--verbose", "--archive", "--delete", "-z", "--copy-links"]
-
-        # On Windows, we have to set a default chmod flag to avoid permission issues
-        if Vagrant::Util::Platform.windows? && !args.any? { |arg| arg.start_with?("--chmod=") }
-          # Ensures that all non-masked bits get enabled
-          args << "--chmod=ugo=rwX"
-
-          # Remove the -p option if --archive is enabled (--archive equals -rlptgoD)
-          # otherwise new files will not have the destination-default permissions
-          args << "--no-perms" if args.include?("--archive") || args.include?("-a")
+        if @path[:source][:excludes]
+          excludes += @path[:source][:excludes].map(&:to_s)
+          excludes.uniq!
         end
 
-        # Disable rsync's owner/group preservation (implied by --archive) unless
-        # specifically requested, since we adjust owner/group to match shared
-        # folder setting ourselves.
-        args << "--no-owner" unless args.include?("--owner") || args.include?("-o")
-        args << "--no-group" unless args.include?("--group") || args.include?("-g")
-
-        # Tell local rsync how to invoke remote rsync with sudo
-        rsync_path = opts[:rsync_path]
-        if !rsync_path && machine.guest.capability?(:rsync_command)
-          rsync_path = machine.guest.capability(:rsync_command)
-        end
-        if rsync_path
-          args << "--rsync-path"<< rsync_path
+        # rsync args
+        if @path[:target][:args][:rsync]
+          rsync_args = @path[:target][:args][:rsync]
+        else
+          rsync_args = ["--verbose", "--archive", "--delete", "--compress",
+            "--copy-links"]
         end
 
-        # Build up the actual command to execute
+        # on Windows, set a default chmod flag to avoid permission issues
+        if Vagrant::Util::Platform.windows? && !rsync_args.any? { |arg| arg.start_with?("--chmod=") }
+          # ensure all bits get masked
+          rsync_args << "--chmod=ugo=rwX"
+
+          # remove the -p option if --archive is enabled, otherwise new files
+          # will not have the destination-default permissions
+          rsync_args << "--no-perms"  if rsync_args.include?("--archive") || rsync_args.include?("-a")
+        end
+
+        # disable rsync's owner/group preservation (implied by --archive) unless
+        # specifically requested, since we adjust owner/group later ourselves
+        unless rsync_args.include?("--owner") || rsync_args.include?("-o")
+          rsync_args << "--no-owner"
+        end
+        unless rsync_args.include?("--group") || rsync_args.include?("-g")
+          rsync_args << "--no-group"
+        end
+
+        # tell local rsync to invoke remote rsync with sudo
+        rsync_command = @machine.guest.capability(:rsync_command)
+        rsync_args << "--rsync-path"<< rsync_command  if rsync_command
+
+        # build up the full command to execute
         command = [
           "rsync",
-          args,
-          "-e", rsh,
+          rsync_args,
+          "-e", ssh_command,
+          includes.map { |path| ["--include", path] },
           excludes.map { |e| ["--exclude", e] },
-          hostpath,
-          "#{ssh_info[:username]}@#{ssh_info[:host]}:#{guestpath}",
+          host_path,
+          "#{@machine.ssh_info[:username]}@#{@machine.ssh_info[:host]}:#{guest_path}",
         ].flatten
 
-        # The working directory should be the root path
         command_opts = {}
-        command_opts[:workdir] = machine.env.root_path.to_s
+        command_opts[:workdir] = @machine.env.root_path.to_s
 
-        machine.ui.info(I18n.t(
-          "vagrant.rsync_folder", guestpath: guestpath, hostpath: hostpath))
-        if excludes.length > 1
-          machine.ui.info(I18n.t(
-            "vagrant.rsync_folder_excludes", excludes: excludes.inspect))
-        end
-        if opts.include?(:verbose)
-          machine.ui.info(I18n.t("vagrant.rsync_showing_output"));
+        result = Vagrant::Util::Subprocess.execute(*(command + [command_opts]))
+        if result.exit_code != 0
+          @machine.ui.error('Rsync failed: ' + result.stderr)
+          @machine.ui.error('The executed command was: ' + command.join(' '))
+          return
         end
 
-        # If we have tasks to do before rsyncing, do those.
-        if machine.guest.capability?(:rsync_pre)
-          machine.guest.capability(:rsync_pre, opts)
+        @machine.ui.info(result.stdout)  unless result.stdout.empty?
+        @machine.ui.success('Synced: ' + includes.join(', '))
+
+        post_rsync_opts = {}
+        post_rsync_opts[:chown] = true
+
+        # TODO: chown only the changed file
+        post_rsync_opts[:guestpath] = @path[:target][:path]
+
+        post_rsync_opts[:owner] = @path[:target][:user]
+        post_rsync_opts[:group] = @path[:target][:group]
+
+        # default owner and group if not given by user
+        post_rsync_opts[:owner] ||= @machine.ssh_info[:username]
+        # TODO: get user primary group over ssh
+        post_rsync_opts[:group] ||= @machine.ssh_info[:username]
+
+        if @machine.guest.capability?(:rsync_post)
+          @machine.guest.capability(:rsync_post, post_rsync_opts)
         end
 
-        if opts.include?(:verbose)
-          command_opts[:notify] = [:stdout, :stderr]
-          r = Vagrant::Util::Subprocess.execute(*(command + [command_opts])) {
-            |io_name,data| data.each_line { |line|
-              machine.ui.info("rsync[#{io_name}] -> #{line}") }
-          }
-        else
-          r = Vagrant::Util::Subprocess.execute(*(command + [command_opts]))
-        end
-
-        if r.exit_code != 0
-          raise Vagrant::Errors::RSyncError,
-            command: command.join(" "),
-            guestpath: guestpath,
-            hostpath: hostpath,
-            stderr: r.stderr
-        end
-
-        opts[:owner] ||= ssh_info[:username]
-        opts[:group] ||= ssh_info[:username]
-
-        # If we have tasks to do after rsyncing, do those.
-        if machine.guest.capability?(:rsync_post)
-          machine.guest.capability(:rsync_post, opts)
-        end
       end
     end
   end

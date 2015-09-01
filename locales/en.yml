@@ -1,9 +1,7 @@
 en:
   rsyncer:
-    info:
-      started: "Rsyncer started. Doing a full rsync to get the guest up to date."
-      watching: "Monitoring changed files."
+    states:
+      initial: "Doing a full sync to get the remote up to date."
+      watching: "Watching file changes in %{path}."
       changed: "Changed: %{path}."
       synced: "Synced, took %{took_msecs} ms."
-    errors:
-      config_not_found: "Rsyncer config file not found."
