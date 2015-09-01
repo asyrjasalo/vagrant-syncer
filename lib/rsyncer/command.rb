@@ -20,11 +20,11 @@ module Vagrant
             end
             listen_opts = path[:source][:listen]
             next  unless listen_opts
-            machine.ui.info(I18n.t('rsyncer.states.watching', path: root_path))
-            listen_path = File.expand_path(root_path, path[:source][:path])
+            listen_path = File.expand_path(path[:source][:path], root_path)
             Listen.to(listen_path, listen_opts) { |modified, added, removed|
               rsyncer.sync(modified + added + removed)
             }.start
+            machine.ui.info(I18n.t('rsyncer.states.watching', path: listen_path))
             sleep
           end
         end
