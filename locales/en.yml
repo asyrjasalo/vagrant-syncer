@@ -2,6 +2,6 @@ en:
   rsyncer:
     states:
       initial: "Doing a full sync to get the remote up to date."
-      watching: "Watching file changes in %{path}."
+      watching: "Watching file changes in %{path} (via %{adapter})"
       changed: "Changed: %{path}."
       synced: "Synced, took %{took_msecs} ms."

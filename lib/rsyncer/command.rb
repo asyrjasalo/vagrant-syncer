@@ -21,7 +21,10 @@ module Vagrant
             Listen.to(listen_path, listen_opts) { |modified, added, removed|
               rsyncer.sync(modified + added + removed)
             }.start
-            machine.ui.info(I18n.t('rsyncer.states.watching', path: listen_path))
+            machine.ui.info(I18n.t('rsyncer.states.watching', {
+              adapter: Listen::Adapter.select,
+              path: listen_path
+            }))
             sleep
           end
         end
