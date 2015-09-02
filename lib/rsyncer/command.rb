@@ -1,6 +1,3 @@
-require Vagrant.source_root.join("plugins/synced_folders/rsync/helper")
-require 'listen'
-
 module Vagrant
   module Rsyncer
     class Command < Vagrant.plugin(2, :command)
