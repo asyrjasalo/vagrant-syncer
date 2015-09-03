@@ -1,5 +1,3 @@
-require 'listen'
-
 module Vagrant
   module Spindle
     module Commands

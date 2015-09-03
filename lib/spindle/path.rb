@@ -1,3 +1,4 @@
+require 'listen'
 require_relative 'syncers/rsync'
 
 module Vagrant
