@@ -32,13 +32,12 @@ module Vagrant
         # Implementation copied from:
         # https://github.com/mitchellh/vagrant/blob/d5458247c7490f0eff79d3e39679a22c5d67ae81/plugins/synced_folders/rsync/command/rsync_auto.rb#L131
         queue = Queue.new
-
-        cb = lambda do
+        callback = lambda do
           Thread.new { queue << true }
         end
 
         # Run the listener in a busy block, exit once we receive an interrupt
-        Vagrant::Util::Busy.busy(cb) do
+        Vagrant::Util::Busy.busy(callback) do
          @listener.start
          queue.pop
          @listener.stop if @listener.state != :stopped
