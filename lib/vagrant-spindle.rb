@@ -4,12 +4,11 @@ rescue LoadError
   raise "This plugin must be run within Vagrant."
 end
 
-require 'spindle/version'
-require 'spindle/errors'
-require 'spindle/plugin'
 require 'spindle/actions'
-require 'spindle/command'
-require 'spindle/rsyncer'
+require 'spindle/machine'
+require 'spindle/path'
+require 'spindle/plugin'
+require 'spindle/version'
 
 module Vagrant
   module Spindle

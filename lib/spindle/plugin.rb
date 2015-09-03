@@ -13,7 +13,13 @@ module Vagrant
       end
 
       command "spindle" do
-        Vagrant::Spindle::Command
+        require 'spindle/commands/spindle'
+        Vagrant::Spindle::Commands::Spindle
+      end
+
+      command "spin" do
+        require 'spindle/commands/spin'
+        Vagrant::Spindle::Commands::Spin
       end
 
       action_hook :initial, :machine_action_up do |hook|
@@ -24,24 +30,8 @@ module Vagrant
         hook.append Vagrant::Spindle::Actions::Reload
       end
 
-      action_hook :initial, :machine_action_provision do |hook|
-        hook.append Vagrant::Spindle::Actions::Provision
-      end
-
-      action_hook :initial, :machine_action_suspend do |hook|
-        hook.append Vagrant::Spindle::Actions::Suspend
-      end
-
       action_hook :initial, :machine_action_resume do |hook|
         hook.append Vagrant::Spindle::Actions::Resume
-      end
-
-      action_hook :initial, :machine_action_halt do |hook|
-        hook.append Vagrant::Spindle::Actions::Halt
-      end
-
-      action_hook :initial, :machine_action_destroy do |hook|
-        hook.append Vagrant::Spindle::Actions::Destroy
       end
 
     end
