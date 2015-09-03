@@ -38,9 +38,9 @@ module Vagrant
 
         # Run the listener in a busy block, exit once we receive an interrupt
         Vagrant::Util::Busy.busy(callback) do
-         @listener.start
-         queue.pop
-         @listener.stop if @listener.state != :stopped
+          @listener.start
+          queue.pop
+          @listener.stop  if @listener.state != :stopped
         end
       end
 
