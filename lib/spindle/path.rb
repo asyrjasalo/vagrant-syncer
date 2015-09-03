@@ -9,14 +9,13 @@ module Vagrant
 
       def initialize(path, machine)
         @source_path = path[:source][:path]
+        @syncer = Syncers::Rsync.new(path, machine)
 
         @initial_enabled = !path[:source][:initial].nil?
         @listen_enabled = !path[:source][:listen].nil?
 
-        abs_source_path = File.expand_path(@source_path, machine.env.root_path)
-        @syncer = Syncers::Rsync.new(path, machine)
-
         if @listen_enabled
+          abs_source_path = File.expand_path(@source_path, machine.env.root_path)
           @listener = Listen.to(abs_source_path, path[:source][:listen], &callback)
         end
       end
