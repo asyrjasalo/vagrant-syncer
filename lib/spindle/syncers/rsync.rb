@@ -11,7 +11,8 @@ module Vagrant
           @logger = machine.ui
 
           @host_path = parse_host_path(path[:source][:path])
-          @rsync_args = parse_rsync_args(path[:target][:args][:rsync])
+          @rsync_args = parse_rsync_args(path[:target][:args][:rsync],
+            path[:target][:permissions])
           @ssh_command = parse_ssh_command(path[:target][:args][:ssh])
           @exclude_args = parse_exclude_args(path[:source][:excludes])
 
@@ -103,18 +104,15 @@ module Vagrant
           ].flatten.join(' ')
         end
 
-        def parse_rsync_args(rsync_args=nil)
-          rsync_args ||= ["--verbose", "--archive", "--delete", "--compress",
-            "--copy-links"]
+        def parse_rsync_args(rsync_args=nil, permissions=nil)
+          rsync_args ||= ["--archive", "--delete", "--delete-excluded",
+            "--compress", "--copy-links"]
 
-          # on Windows, set a default chmod flag to avoid permission issues
-          if Vagrant::Util::Platform.windows? && !rsync_args.any? { |arg| arg.start_with?("--chmod=") }
-            # ensure all bits get masked
-            rsync_args << "--chmod=ugo=rwX"
-
-            # remove the -p option if --archive is enabled, otherwise new files
-            # will not have the destination-default permissions
-            rsync_args << "--no-perms"  if rsync_args.include?("--archive") || rsync_args.include?("-a")
+          rsync_chmod_args_given = rsync_args.any? { |arg| arg.start_with?("--chmod=") }
+          if permissions && !rsync_chmod_args_given
+            rsync_args << "--chmod=u=#{permissions[:user]}"  if permissions[:user]
+            rsync_args << "--chmod=g=#{permissions[:group]}" if permissions[:group]
+            rsync_args << "--chmod=o=#{permissions[:other]}" if permissions[:other]
           end
 
           # disable rsync's owner/group preservation (implied by --archive) unless
@@ -126,7 +124,7 @@ module Vagrant
             rsync_args << "--no-group"
           end
 
-          # tell local rsync to invoke remote rsync with sudo
+          # invoke remote rsync with sudo
           rsync_command = @machine.guest.capability(:rsync_command)
           rsync_args << "--rsync-path"<< rsync_command  if rsync_command
 
