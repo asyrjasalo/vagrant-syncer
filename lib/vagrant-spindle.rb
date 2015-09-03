@@ -4,15 +4,15 @@ rescue LoadError
   raise "This plugin must be run within Vagrant."
 end
 
-require 'rsyncer/version'
-require 'rsyncer/errors'
-require 'rsyncer/plugin'
-require 'rsyncer/actions'
-require 'rsyncer/command'
-require 'rsyncer/rsyncer'
+require 'spindle/version'
+require 'spindle/errors'
+require 'spindle/plugin'
+require 'spindle/actions'
+require 'spindle/command'
+require 'spindle/rsyncer'
 
 module Vagrant
-  module Rsyncer
+  module Spindle
 
     def self.source_root
       @source_root ||= Pathname.new(File.expand_path('../../', __FILE__))

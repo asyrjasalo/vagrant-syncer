@@ -1,5 +1,5 @@
 en:
-  rsyncer:
+  spindle:
     states:
       initial: "Doing a full sync to get the remote up to date."
       watching: "Watching file changes in %{path} (via %{adapter})"

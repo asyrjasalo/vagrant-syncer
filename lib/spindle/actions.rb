@@ -1,5 +1,5 @@
 module Vagrant
-  module Rsyncer
+  module Spindle
     module Actions
       class Base
         def initialize(app, env)

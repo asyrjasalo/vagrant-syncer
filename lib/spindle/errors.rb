@@ -1,8 +1,8 @@
 module Vagrant
-  module Rsyncer
+  module Spindle
 
     class Error < Errors::VagrantError
-      error_namespace("rsyncer.errors")
+      error_namespace("spindle.errors")
     end
 
   end

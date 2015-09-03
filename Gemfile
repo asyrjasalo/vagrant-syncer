@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in vagrant-rsyncer.gemspec
+# Specify your gem's dependencies in vagrant-spindle.gemspec
 gemspec
 
 group :development do
@@ -8,5 +8,5 @@ group :development do
 end
 
 group :plugins do
-  gem "vagrant-rsyncer", path: "."
+  gem "vagrant-spindle", path: "."
 end

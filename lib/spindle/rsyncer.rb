@@ -2,7 +2,7 @@ require "vagrant/util/platform"
 require "vagrant/util/subprocess"
 
 module Vagrant
-  module Rsyncer
+  module Spindle
     class Rsyncer
 
       def initialize(path, machine)

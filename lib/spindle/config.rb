@@ -1,5 +1,5 @@
 module Vagrant
-  module Rsyncer
+  module Spindle
     class Config < Vagrant.plugin(2, :config)
 
       attr_accessor :settings
