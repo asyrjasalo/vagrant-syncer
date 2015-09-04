@@ -31,9 +31,14 @@ module Vagrant
             group: path[:target][:group]
           }
           @vagrant_rsync_opts[:owner] ||= ssh_username
-          # TODO: Get user's primary group over SSH
-          @vagrant_rsync_opts[:group] ||= ssh_username
+          if @vagrant_rsync_opts[:group].nil?
+            machine.communicate.execute('id -gn') do |type, output|
+              @vagrant_rsync_opts[:group] = output.chomp  if type == :stdout
+            end
+          end
         end
+
+
 
         def sync(includes=nil)
           includes ||= [@host_path]
