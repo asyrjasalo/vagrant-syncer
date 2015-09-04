@@ -1,4 +1,6 @@
 require 'listen'
+require 'vagrant/util/busy'
+
 require_relative 'syncers/rsync'
 
 module Vagrant
