@@ -90,7 +90,7 @@ module Vagrant
         end
 
         def parse_ssh_command(ssh_args=nil)
-          ssh_args ||= []
+          ssh_args ||= ['-o StrictHostKeyChecking=no', '-o UserKnownHostsFile=/dev/null']
 
           proxy_command = ""
           if @machine.ssh_info[:proxy_command]
