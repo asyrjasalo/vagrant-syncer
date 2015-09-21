@@ -82,15 +82,13 @@ module Vagrant
             host_path = Vagrant::Util::Platform.cygwin_path(host_path)
           end
           # prevent creating directory inside directory
-          if File.directory?(host_path) && !host_path.end_with?("/")
-            host_path += "/"
-          end
+          host_path += "/"  if File.directory?(host_path) && !host_path.end_with?("/")
           host_path
         end
 
         def parse_exclude_args(excludes=nil)
           excludes ||= []
-          excludes << '.vagrant/'
+          excludes << '.vagrant/'  # always exclude .vagrant directory
           excludes.uniq.map { |e| ["--exclude", e] }
         end
 
@@ -110,14 +108,14 @@ module Vagrant
         end
 
         def parse_rsync_args(rsync_args=nil, permissions=nil)
-          rsync_args ||= ["--archive", "--delete", "--delete-excluded",
-            "--compress", "--copy-links"]
+          rsync_args ||= ["--archive", "--delete", "--compress", "--copy-links"]
 
+          # if any --chmod args given to rsync, ignore permissions
           rsync_chmod_args_given = rsync_args.any? { |arg| arg.start_with?("--chmod=") }
           if permissions && !rsync_chmod_args_given
-            rsync_args << "--chmod=u=#{permissions[:user]}"  if permissions[:user]
-            rsync_args << "--chmod=g=#{permissions[:group]}" if permissions[:group]
-            rsync_args << "--chmod=o=#{permissions[:other]}" if permissions[:other]
+            rsync_args << "--chmod=u=#{permissions[:user]}"   if permissions[:user]
+            rsync_args << "--chmod=g=#{permissions[:group]}"  if permissions[:group]
+            rsync_args << "--chmod=o=#{permissions[:other]}"  if permissions[:other]
           end
 
           # disable rsync's owner/group preservation (implied by --archive) unless
