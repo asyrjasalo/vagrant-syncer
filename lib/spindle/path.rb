@@ -9,6 +9,30 @@ module Vagrant
 
       attr_accessor :initial_enabled, :listen_enabled
 
+      # Forked from:
+      # https://github.com/mitchellh/vagrant/blob/master/plugins/synced_folders/rsync/helper.rb#L11
+      # TODO: Fix it
+      def self.rsync_exclude_to_listen(path, exclude)
+        start_anchor = false
+
+        if exclude.start_with?("/")
+          start_anchor = true
+          exclude      = exclude[1..-1]
+        end
+
+        path   = "#{path}/" if !path.end_with?("/")
+        regexp = "^#{Regexp.escape(path)}"
+        regexp += ".*" if !start_anchor
+
+        exclude = exclude.gsub("**", "|||GLOBAL|||")
+        exclude = exclude.gsub("*", "|||PATH|||")
+        exclude = exclude.gsub("|||PATH|||", "[^/]*")
+        exclude = exclude.gsub("|||GLOBAL|||", ".*")
+        regexp += exclude
+
+        Regexp.new(regexp)
+      end
+
       def initialize(path, machine)
         @source_path = path[:source][:path]
         @syncer = Syncers::Rsync.new(path, machine)
@@ -17,8 +41,15 @@ module Vagrant
         @listen_enabled = !path[:source][:listen].nil?
 
         if @listen_enabled
+          listen_ignores = []
           abs_source_path = File.expand_path(@source_path, machine.env.root_path)
-          @listener = Listen.to(abs_source_path, path[:source][:listen], &callback)
+          path[:source][:excludes].each do |pattern|
+            listen_ignores << self.class.rsync_exclude_to_listen(abs_source_path,
+              pattern.to_s)
+          end
+
+          listen_settings = path[:source][:listen].merge(ignore: listen_ignores)
+          @listener = Listen.to(abs_source_path, listen_settings, &callback)
         end
       end
 
