@@ -9,28 +9,15 @@ module Vagrant
 
       attr_accessor :initial_enabled, :listen_enabled
 
-      # Forked from:
+      # Convert Rsync exclude pattern to a regular expression.
+      # Implementation from:
       # https://github.com/mitchellh/vagrant/blob/master/plugins/synced_folders/rsync/helper.rb#L11
-      # TODO: Fix it
-      def self.rsync_exclude_to_listen(path, exclude)
-        start_anchor = false
-
-        if exclude.start_with?("/")
-          start_anchor = true
-          exclude      = exclude[1..-1]
-        end
-
-        path   = "#{path}/" if !path.end_with?("/")
-        regexp = "^#{Regexp.escape(path)}"
-        regexp += ".*" if !start_anchor
-
+      def self.ignore_to_listen(exclude)
         exclude = exclude.gsub("**", "|||GLOBAL|||")
         exclude = exclude.gsub("*", "|||PATH|||")
         exclude = exclude.gsub("|||PATH|||", "[^/]*")
         exclude = exclude.gsub("|||GLOBAL|||", ".*")
-        regexp += exclude
-
-        Regexp.new(regexp)
+        Regexp.new(exclude)
       end
 
       def initialize(path, machine)
@@ -44,8 +31,7 @@ module Vagrant
           listen_ignores = []
           abs_source_path = File.expand_path(@source_path, machine.env.root_path)
           path[:source][:excludes].each do |pattern|
-            listen_ignores << self.class.rsync_exclude_to_listen(abs_source_path,
-              pattern.to_s)
+            listen_ignores << self.class.ignore_to_listen(pattern.to_s)
           end
 
           listen_settings = path[:source][:listen].merge(ignore: listen_ignores)
@@ -62,8 +48,6 @@ module Vagrant
       end
 
       def listen
-        # Implementation copied from:
-        # https://github.com/mitchellh/vagrant/blob/d5458247c7490f0eff79d3e39679a22c5d67ae81/plugins/synced_folders/rsync/command/rsync_auto.rb#L131
         queue = Queue.new
         callback = lambda do
           Thread.new { queue << true }
