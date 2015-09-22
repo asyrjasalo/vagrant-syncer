@@ -38,8 +38,6 @@ module Vagrant
           end
         end
 
-
-
         def sync(includes=nil)
           includes ||= [@host_path]
 
