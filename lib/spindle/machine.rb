@@ -21,7 +21,7 @@ module Vagrant
         @paths.select(&:listen_enabled).each do |path|
           @logger.info(I18n.t('spindle.states.watching', {
             adapter: Listen::Adapter.select,
-            path: path.to_s
+            path: path.absolute_path
           }))
           path.listen
         end

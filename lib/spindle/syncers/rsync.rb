@@ -62,8 +62,7 @@ module Vagrant
             return
           end
 
-          @logger.info(result.stdout)  unless result.stdout.empty?
-          @logger.success('Synced: ' + includes.join(', '))
+          @logger.success(result.stdout)  unless result.stdout.empty?
 
           if @machine.guest.capability?(:rsync_post)
             @machine.guest.capability(:rsync_post, @vagrant_rsync_opts)
