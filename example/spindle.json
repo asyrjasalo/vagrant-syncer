@@ -25,7 +25,7 @@
           "other": ""
         },
         "args": {
-          "rsync": ["-a", "--delete", "--delete-excluded", "--force", "--inplace", "--out-format=Rsynced: %n%L"],
+          "rsync": ["--archive", "--delete", "--force"],
           "ssh": ["-o StrictHostKeyChecking=no", "-o UserKnownHostsFile=/dev/null"]
         }
       }

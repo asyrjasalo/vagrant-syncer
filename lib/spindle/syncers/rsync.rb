@@ -90,12 +90,16 @@ module Vagrant
         end
 
         def parse_ssh_command(ssh_args=nil)
-          ssh_args ||= ['-o StrictHostKeyChecking=no', '-o UserKnownHostsFile=/dev/null']
+          ssh_args ||= [
+            '-o StrictHostKeyChecking=no',
+            '-o UserKnownHostsFile=/dev/null'
+          ]
 
           proxy_command = ""
           if @machine.ssh_info[:proxy_command]
             proxy_command = "-o ProxyCommand='#{@machine.ssh_info[:proxy_command]}' "
           end
+
           ssh_command = [
             "ssh -p #{@machine.ssh_info[:port]} " +
             proxy_command +
@@ -105,10 +109,14 @@ module Vagrant
         end
 
         def parse_rsync_args(rsync_args=nil, permissions=nil)
-          rsync_args ||= ["--archive", "--delete", "--compress", "--copy-links"]
+          rsync_args ||= ["--archive", "--force", "--delete"]
 
-          # if any --chmod args given to rsync, ignore permissions
-          rsync_chmod_args_given = rsync_args.any? { |arg| arg.start_with?("--chmod=") }
+          # if --chmod args given to rsync, prefer them instead
+          rsync_chmod_args_given = rsync_args.any? do |arg|
+            arg.start_with?("--chmod=")
+          end
+
+          # otherwise convert our given permissions to --chmod args
           if permissions && !rsync_chmod_args_given
             rsync_args << "--chmod=u=#{permissions[:user]}"   if permissions[:user]
             rsync_args << "--chmod=g=#{permissions[:group]}"  if permissions[:group]
@@ -117,16 +125,17 @@ module Vagrant
 
           # disable rsync's owner/group preservation (implied by --archive) unless
           # specifically requested, since we adjust owner/group later ourselves
-          unless rsync_args.include?("--owner") || rsync_args.include?("-o")
-            rsync_args << "--no-owner"
-          end
-          unless rsync_args.include?("--group") || rsync_args.include?("-g")
-            rsync_args << "--no-group"
-          end
+          #unless rsync_args.include?("--owner") || rsync_args.include?("-o")
+          #  rsync_args << "--no-owner"
+          #end
+
+          #unless rsync_args.include?("--group") || rsync_args.include?("-g")
+          #  rsync_args << "--no-group"
+          #end
 
           # invoke remote rsync with sudo
-          rsync_command = @machine.guest.capability(:rsync_command)
-          rsync_args << "--rsync-path"<< rsync_command  if rsync_command
+          #rsync_command = @machine.guest.capability(:rsync_command)
+          #rsync_args << "--rsync-path"<< rsync_command  if rsync_command
 
           rsync_args
         end
