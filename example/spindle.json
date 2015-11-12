@@ -1,7 +1,6 @@
 {
   "paths": [
     {
-      "verbose": true,
       "source": {
         "path": "files",
         "excludes": [
