@@ -20,22 +20,6 @@ module Vagrant
           ssh_host = machine.ssh_info[:host]
           guest_path = path[:target][:path]
           @ssh_target = "#{ssh_username}@#{ssh_host}:#{guest_path}"
-
-          @vagrant_cmd_opts = {
-            workdir: machine.env.root_path.to_s
-          }
-          @vagrant_rsync_opts = {
-            guestpath: guest_path,
-            chown: true,
-            owner: path[:target][:user],
-            group: path[:target][:group]
-          }
-          @vagrant_rsync_opts[:owner] ||= ssh_username
-          if @vagrant_rsync_opts[:group].nil?
-            machine.communicate.execute('id -gn') do |type, output|
-              @vagrant_rsync_opts[:group] = output.chomp  if type == :stdout
-            end
-          end
         end
 
         def sync(includes=nil)
@@ -51,21 +35,16 @@ module Vagrant
             @ssh_target
           ].flatten
 
-          if @machine.guest.capability?(:rsync_pre)
-            @machine.guest.capability(:rsync_pre, @vagrant_rsync_opts)
-          end
+          result = Vagrant::Util::Subprocess.execute(
+            *(command + [{ workdir: @machine.env.root_path.to_s }])
+          )
 
-          result = Vagrant::Util::Subprocess.execute(*(command + [@vagrant_cmd_opts]))
           if result.exit_code != 0
             @logger.error('Rsync failed: ' + result.stderr)
             @logger.error('The executed command was: ' + command.join(' '))
-            return
-          end
-
-          @logger.success(result.stdout)  unless result.stdout.empty?
-
-          if @machine.guest.capability?(:rsync_post)
-            @machine.guest.capability(:rsync_post, @vagrant_rsync_opts)
+          else
+            @logger.success('Rsynced: ' + includes.join(', '))
+            @logger.success(result.stdout)  unless result.stdout.empty?
           end
         end
 
@@ -74,12 +53,17 @@ module Vagrant
         def parse_host_path(source_path)
           host_path = File.expand_path(source_path, @machine.env.root_path)
           host_path = Vagrant::Util::Platform.fs_real_path(host_path).to_s
-          # Rsync on Windows expects Cygwin style paths
+
+          # rsync on Windows expects Cygwin style paths
           if Vagrant::Util::Platform.windows?
             host_path = Vagrant::Util::Platform.cygwin_path(host_path)
           end
+
           # prevent creating directory inside directory
-          host_path += "/"  if File.directory?(host_path) && !host_path.end_with?("/")
+          if File.directory?(host_path) && !host_path.end_with?("/")
+            host_path += "/"
+          end
+
           host_path
         end
 

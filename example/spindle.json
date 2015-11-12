@@ -16,9 +16,7 @@
         }
       },
       "target": {
-        "path": "/home/vagrant/files",
-        "user": "vagrant",
-        "group": "vagrant",
+        "path": "files",
         "permissions": {
           "user": "rwX",
           "group": "rX",
