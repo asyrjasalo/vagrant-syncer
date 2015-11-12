@@ -7,7 +7,7 @@ module Vagrant
   module Spindle
     class Path
 
-      attr_accessor :initial_enabled, :listen_enabled, :absolute_path
+      attr_accessor :do_initial, :do_continuous, :absolute_path
 
       # Convert Rsync exclude patterns to Listen gem.
       # Implementation partially from:
@@ -33,20 +33,20 @@ module Vagrant
         @logger = machine.ui
         @source_path = path[:source][:path]
         @syncer = Syncers::Rsync.new(path, machine)
+
         @absolute_path = File.expand_path(@source_path, machine.env.root_path)
+        @do_initial = path[:source][:initial] || true
+        @do_continuous = path[:source][:continuous] || true
 
-        @initial_enabled = !path[:source][:initial].nil?
-        @listen_enabled = !path[:source][:listen].nil?
-
-        if @listen_enabled
+        if @do_continuous
           listen_ignores = []
 
           path[:source][:excludes].each do |pattern|
             listen_ignores << self.class.excludes_to_listen(pattern.to_s)
           end
 
-          listen_settings = path[:source][:listen].merge(ignore: listen_ignores)
-          @listener = Listen.to(@absolute_path, listen_settings, &callback)
+          listener_settings = path[:source][:listener].merge(ignore: listen_ignores)
+          @listener = Listen.to(@absolute_path, listener_settings, &callback)
         end
       end
 

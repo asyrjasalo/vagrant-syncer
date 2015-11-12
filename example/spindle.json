@@ -9,8 +9,9 @@
           "*glob_excluded_file*",
           "*glob_excluded_directory"
         ],
-        "initial": {},
-        "listen": {
+        "initial": true,
+        "continuous": true,
+        "listener": {
           "latency": 0.1
         }
       },

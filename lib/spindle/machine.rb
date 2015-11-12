@@ -11,14 +11,14 @@ module Vagrant
       end
 
       def full
-        @paths.select(&:initial_enabled).each do |path|
+        @paths.select(&:do_initial).each do |path|
           @logger.info(I18n.t('spindle.states.initial'))
           path.initial
         end
       end
 
       def listen
-        @paths.select(&:listen_enabled).each do |path|
+        @paths.select(&:do_continuous).each do |path|
           @logger.info(I18n.t('spindle.states.watching', {
             adapter: Listen::Adapter.select,
             path: path.absolute_path
