@@ -17,11 +17,6 @@ module Vagrant
         Vagrant::Spindle::Commands::Spindle
       end
 
-      #command "spin" do
-      #  require 'spindle/commands/spin'
-      #  Vagrant::Spindle::Commands::Spin
-      #end
-
       action_hook :initial, :machine_action_up do |hook|
         hook.append Vagrant::Spindle::Actions::Up
       end
