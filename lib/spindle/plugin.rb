@@ -4,7 +4,7 @@ module Vagrant
 
       name "Spindle"
       description <<-DESC
-      Listens host filesystem events and syncs changes to the guest.
+      Watches the changed files on the host and rsyncs them to the guest.
       DESC
 
       config "spindle" do
