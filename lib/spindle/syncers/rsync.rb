@@ -24,10 +24,13 @@ module Vagrant
         end
 
         def sync(includes=nil)
+          includes ||= [@host_path]
+
           command = [
             "rsync",
             @rsync_args,
             "-e", @ssh_command,
+            includes.map { |path| ["--include", path] },
             @exclude_args,
             @host_path,
             @ssh_target
