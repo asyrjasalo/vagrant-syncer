@@ -4,7 +4,7 @@ module Vagrant
       class Spindle < Vagrant.plugin(2, :command)
 
         def self.synopsis
-          "continuously synchronizes changed files to the remote"
+          "continuously rsyncs the changed files to the guest"
         end
 
         def execute
