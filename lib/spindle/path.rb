@@ -37,8 +37,10 @@ module Vagrant
         if @do_continuous
           listen_ignores = []
 
-          path[:source][:excludes].each do |pattern|
-            listen_ignores << self.class.excludes_to_listen(pattern.to_s)
+          if path[:source][:excludes]
+            path[:source][:excludes].each do |pattern|
+              listen_ignores << self.class.excludes_to_listen(pattern.to_s)
+            end
           end
 
           listener_settings = path[:source][:listener].merge(
