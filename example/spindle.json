@@ -4,10 +4,11 @@
       "source": {
         "path": "files",
         "excludes": [
-          "excluded_file.txt",
-          "directory/excluded_directory",
-          "*glob_excluded_file*",
-          "*glob_excluded_directory"
+          "/excluded_file.txt",
+          "/excluded_directory",
+          "excluded_nested_file.txt",
+          "excluded_nested_directory",
+          "*.not"
         ],
         "initial": true,
         "continuous": true,
