@@ -9,6 +9,7 @@ module Vagrant
 
       class Up < Base
         def call(env)
+          return  unless env[:machine].config.spindle.settings
           machine = Machine.new(env[:machine])
           machine.full
           @app.call(env)

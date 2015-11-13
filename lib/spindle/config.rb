@@ -9,10 +9,7 @@ module Vagrant
       end
 
       def finalize!
-        unless @config
-          raise Vagrant::Errors::VagrantError.new,
-            I18n.t('spindle.config.undefined')
-        end
+        return  unless @config
 
         begin
           config_content = File.read(@config)
