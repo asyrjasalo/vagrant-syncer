@@ -9,24 +9,20 @@ module Vagrant
 
       attr_accessor :do_initial, :do_continuous, :absolute_path
 
-      # Convert Rsync exclude patterns to Listen gem.
-      # Implementation partially from:
-      # https://github.com/mitchellh/vagrant/blob/master/plugins/synced_folders/rsync/helper.rb#L11
       def self.excludes_to_listen(exclude)
-        if exclude.start_with?("/")
-          regexp = "^"
-          exclude = exclude[1..-1]
+        exclude = exclude.gsub('**', '"GLOBAL"')
+        exclude = exclude.gsub('*', '"PATH"')
+
+        if exclude.start_with?('/')
+          pattern = "^#{Regexp.escape(exclude[1..-1])}"
         else
-          regexp = ".*"
+          pattern = Regexp.escape(exclude)
         end
 
-        exclude = exclude.gsub("**", "|||GLOBAL|||")
-        exclude = exclude.gsub("*", "|||PATH|||")
-        exclude = exclude.gsub("|||PATH|||", "[^/]*")
-        exclude = exclude.gsub("|||GLOBAL|||", ".*")
-        regexp += Regexp.escape(exclude)
+        pattern = pattern.gsub('"PATH"', "[^/]*")
+        pattern = pattern.gsub('"GLOBAL"', ".*")
 
-        Regexp.new(regexp)
+        Regexp.new(pattern)
       end
 
       def initialize(path, machine)
@@ -45,7 +41,10 @@ module Vagrant
             listen_ignores << self.class.excludes_to_listen(pattern.to_s)
           end
 
-          listener_settings = path[:source][:listener].merge(ignore: listen_ignores)
+          listener_settings = path[:source][:listener].merge(
+            ignore!: listen_ignores,
+            relative: true
+          )
           @listener = Listen.to(@absolute_path, listener_settings, &callback)
         end
       end
@@ -77,7 +76,7 @@ module Vagrant
       def callback
         Proc.new do |modified, added, removed|
           changed = modified + added + removed
-          @logger.info("Changed: " + changed.join(', '))
+          @logger.warn("Changed: " + changed.join(', '))
           @syncer.sync(changed)
         end
       end
