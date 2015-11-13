@@ -1,7 +1,14 @@
 en:
   spindle:
+    config:
+      undefined: "Missing spindle.config definition in Vagrantfile."
     states:
       initial: "Doing a full sync to get the remote up to date."
       watching: "Watching file changes in %{path} (via %{adapter})"
-      changed: "Changed: %{path}."
-      synced: "Synced, took %{took_msecs} ms."
+      changed: "Changed: %{paths}"
+      synced: "Rsynced: %{paths}"
+    rsync:
+      success: "Rsynced: "
+      bytes_sent: "%{bytes}B sent"
+      failed: "Rsync failed: %{error}"
+      failed_command: "The failed command was: %{command}"

@@ -38,8 +38,8 @@ module Vagrant
           )
 
           if result.exit_code != 0
-            @logger.error('Rsync failed: ' + result.stderr)
-            @logger.error('The executed command was: ' + command.join(' '))
+            @logger.error(I18n.t('spindle.rsync.failed', error: result.stderr))
+            @logger.error(I18n.t('spindle.rsync.failed_command', command: command.join(' ')))
           else
             unless result.stdout.empty?
               @logger.success(result.stdout.gsub("#{@machine_path[1..-1]}/", ''))
@@ -93,7 +93,10 @@ module Vagrant
 
         def parse_rsync_args(rsync_args=nil, permissions=nil)
           rsync_args ||= ["--archive", "--force", "--delete"]
-          rsync_args.unshift("--out-format=Rsynced: %L%f (%b bytes sent)")
+
+          # This is the default rsync output unless overridden
+          rsync_args.unshift("--out-format=#{I18n.t('spindle.rsync.success')}" +
+            "%L%f (%bB)")
 
           # If --chmod args are given to rsync, prefer them instead
           rsync_chmod_args_given = rsync_args.any? do |arg|

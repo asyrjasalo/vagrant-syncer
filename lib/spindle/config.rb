@@ -11,7 +11,7 @@ module Vagrant
       def finalize!
         unless @config
           raise Vagrant::Errors::VagrantError.new,
-            "Config file is not defined in Vagrantfile."
+            I18n.t('spindle.config.undefined')
         end
 
         begin
