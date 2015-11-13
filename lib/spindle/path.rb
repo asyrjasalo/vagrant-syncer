@@ -33,6 +33,7 @@ module Vagrant
         @absolute_path = File.expand_path(@source_path, machine.env.root_path)
         @do_initial = path[:source][:initial] || true
         @do_continuous = path[:source][:continuous] || true
+        @listener_verbose = path[:source][:listener][:verbose] || false
 
         if @do_continuous
           listen_ignores = []
@@ -78,8 +79,10 @@ module Vagrant
       def callback
         Proc.new do |modified, added, removed|
           changed = modified + added + removed
-          @logger.warn(I18n.t('spindle.states.changed',
-            paths: changed.join(', ')))
+          if @listener_verbose
+            @logger.warn(I18n.t('spindle.states.changed',
+              paths: changed.join(', ')))
+          end
           @syncer.sync(changed)
         end
       end
