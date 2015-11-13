@@ -38,8 +38,10 @@ module Vagrant
           )
 
           if result.exit_code != 0
-            @logger.error(I18n.t('spindle.rsync.failed', error: result.stderr))
-            @logger.error(I18n.t('spindle.rsync.failed_command', command: command.join(' ')))
+            @logger.error(I18n.t('spindle.rsync.failed',
+              error: result.stderr))
+            @logger.error(I18n.t('spindle.rsync.failed_command',
+              command: command.join(' ')))
           else
             unless result.stdout.empty?
               @logger.success(result.stdout.gsub("#{@machine_path[1..-1]}/", ''))

@@ -76,7 +76,8 @@ module Vagrant
       def callback
         Proc.new do |modified, added, removed|
           changed = modified + added + removed
-          @logger.warn(I18n.t('spindle.states.changed', paths: changed.join(', ')))
+          @logger.warn(I18n.t('spindle.states.changed',
+            paths: changed.join(', ')))
           @syncer.sync(changed)
         end
       end
