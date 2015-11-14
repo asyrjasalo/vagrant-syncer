@@ -11,7 +11,7 @@ module Vagrant
 
       def initialize(path_opts, machine)
         @logger = machine.ui
-        @source_path = path_opts[:guestpath]
+        @source_path = path_opts[:hostpath]
         @syncer = Syncers::Rsync.new(path_opts, machine)
         @absolute_path = File.expand_path(@source_path, machine.env.root_path)
 
