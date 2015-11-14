@@ -108,6 +108,7 @@ module Vagrant
         def parse_ssh_command(ssh_args=nil)
           ssh_args ||= [
             '-o StrictHostKeyChecking=no',
+            '-o IdentitiesOnly=true',
             '-o UserKnownHostsFile=/dev/null'
           ]
 
