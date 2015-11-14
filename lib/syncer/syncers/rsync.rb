@@ -14,7 +14,7 @@ module Vagrant
           @host_path = parse_host_path(path_opts[:hostpath])
           @rsync_args = parse_rsync_args(path_opts[:rsync__args])
           @ssh_command = parse_ssh_command(machine.config.syncer.ssh_args)
-          @exclude_args = parse_exclude_args(path_opts[:rsync__excludes])
+          @exclude_args = parse_exclude_args(path_opts[:rsync__exclude])
 
           ssh_username = machine.ssh_info[:username]
           ssh_host = machine.ssh_info[:host]
