@@ -17,7 +17,7 @@ module Vagrant
 
         @do_initial = machine.config.syncer.initial
         @do_continuous = machine.config.syncer.continuous
-        @listener_verbose = machine.config.syncer.verbose
+        @listener_verbose = machine.config.syncer.show_events
         @listener_interval = machine.config.syncer.interval
 
         if @do_continuous
