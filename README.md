@@ -1,9 +1,9 @@
 # Vagrant::Syncer
 
-## TODO
+## 1.0 TODO
 
 - add the existing Vagrant mechanism to detect if rsync is available
-- verify inotify-rb on GNU/Linux
+- verify rb-inotify on GNU/Linux
 - verify Listen (WDM) and polling on Windows
 - write this README.md (plugin settings, listener improvements)
 - write some acceptance tests
