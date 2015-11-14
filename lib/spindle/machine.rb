@@ -20,8 +20,9 @@ module Vagrant
       def listen
         @paths.select(&:do_continuous).each do |path|
           @logger.info(I18n.t('spindle.states.watching', {
-            adapter: Listen::Adapter.select,
-            path: path.absolute_path
+            path: path.absolute_path,
+            adapter: path.listener_class,
+            interval: path.listener_interval
           }))
           path.listen
         end

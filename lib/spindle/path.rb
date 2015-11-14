@@ -1,5 +1,4 @@
-require 'listen'
-require 'vagrant/util/busy'
+require 'vagrant/util/platform'
 
 require_relative 'syncers/rsync'
 
@@ -7,53 +6,57 @@ module Vagrant
   module Spindle
     class Path
 
-      attr_accessor :do_initial, :do_continuous, :absolute_path
-
-      def self.excludes_to_listen(exclude)
-        exclude = exclude.gsub('**', '"GLOBAL"')
-        exclude = exclude.gsub('*', '"PATH"')
-
-        if exclude.start_with?('/')
-          pattern = "^#{Regexp.escape(exclude[1..-1])}"
-        else
-          pattern = Regexp.escape(exclude)
-        end
-
-        pattern = pattern.gsub('"PATH"', "[^/]*")
-        pattern = pattern.gsub('"GLOBAL"', ".*")
-
-        Regexp.new(pattern)
-      end
+      attr_accessor :do_initial,
+        :do_continuous,
+        :absolute_path,
+        :listener_class,
+        :listener_interval
 
       def initialize(path, machine)
-        @logger = machine.ui
         @source_path = path[:source][:path]
         @syncer = Syncers::Rsync.new(path, machine)
-
         @absolute_path = File.expand_path(@source_path, machine.env.root_path)
+
         @do_initial = path[:source][:initial] || true
         @do_continuous = path[:source][:continuous] || true
-        @listener_verbose = path[:source][:listener][:verbose] || false
+
+        if path[:source][:listener]
+          @listener_verbose = path[:source][:listener][:verbose]
+          @listener_interval = path[:source][:listener][:interval]
+        end
+
+        @listener_verbose ||= false
+        @listener_interval ||= 0.1
+
+        @logger = machine.ui  if @listener_verbose
 
         if @do_continuous
-          listen_ignores = []
-
-          if path[:source][:excludes]
-            path[:source][:excludes].each do |pattern|
-              listen_ignores << self.class.excludes_to_listen(pattern.to_s)
-            end
+          case Vagrant::Util::Platform.platform
+          when /darwin/
+            require_relative 'listeners/fsevents'
+            @listener_class = Vagrant::Spindle::Listeners::FSEvents
+          when /linux/
+            require_relative 'listeners/inotify'
+            @listener_class = Vagrant::Spindle::Listeners::INotify
+          else
+            require_relative 'listeners/listen'
+            @listener_class = Vagrant::Spindle::Listeners::Listen
           end
 
-          listener_settings = path[:source][:listener].merge(
-            ignore!: listen_ignores,
-            relative: true
-          )
-          @listener = Listen.to(@absolute_path, listener_settings, &callback)
-        end
-      end
+          require_relative 'listeners/listen'
+          @listener_class = Vagrant::Spindle::Listeners::Listen
 
-      def to_s
-        @source_path
+          listener_settings = {
+            latency: @listener_interval
+          }
+
+          @listener = @listener_class.new(
+            @absolute_path,
+            path[:source][:excludes],
+            listener_settings,
+            change_handler
+          )
+        end
       end
 
       def initial
@@ -61,28 +64,15 @@ module Vagrant
       end
 
       def listen
-        queue = Queue.new
-        callback = lambda do
-          Thread.new { queue << true }
-        end
-
-        # Run the listener in a busy block, exit once we receive an interrupt
-        Vagrant::Util::Busy.busy(callback) do
-          @listener.start
-          queue.pop
-          @listener.stop  if @listener.state != :stopped
-        end
+        @listener.run
       end
 
       private
 
-      def callback
-        Proc.new do |modified, added, removed|
-          changed = modified + added + removed
-          if @listener_verbose
-            @logger.warn(I18n.t('spindle.states.changed',
-              paths: changed.join(', ')))
-          end
+      def change_handler
+        Proc.new do |changed|
+          @logger.warn(I18n.t('spindle.states.changed',
+            paths: changed.to_a.join(', ')))  if @listener_verbose
           @syncer.sync(changed)
         end
       end

@@ -23,14 +23,14 @@ module Vagrant
           @ssh_target = "#{ssh_username}@#{ssh_host}:#{guest_path}"
         end
 
-        def sync(includes=nil)
-          includes ||= [@host_path]
+        def sync(changed_paths=nil)
+          changed_paths ||= [@host_path]
 
           command = [
             "rsync",
             @rsync_args,
             "-e", @ssh_command,
-            includes.map { |path| ["--include", path] },
+            changed_paths.map { |path| ["--include", path] },
             @exclude_args,
             @host_path,
             @ssh_target

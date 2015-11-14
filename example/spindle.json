@@ -13,8 +13,8 @@
         "initial": true,
         "continuous": true,
         "listener": {
-          "verbose": false,
-          "latency": 0.1
+          "verbose": true,
+          "interval": 0.1
         }
       },
       "target": {
