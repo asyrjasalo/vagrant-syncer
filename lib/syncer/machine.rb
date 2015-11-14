@@ -1,12 +1,18 @@
+require 'vagrant/action/builtin/mixin_synced_folders'
+
+
 module Vagrant
   module Syncer
     class Machine
 
+      include Vagrant::Action::Builtin::MixinSyncedFolders
+
       def initialize(machine)
         @logger = machine.ui
         @paths = []
-        machine.config.syncer.settings[:paths].each do |path|
-          @paths << Path.new(path, machine)
+
+        synced_folders(machine)[:rsync].each do |id, folder_opts|
+          @paths << Path.new(folder_opts, machine)
         end
       end
 
@@ -21,7 +27,7 @@ module Vagrant
         @paths.select(&:do_continuous).each do |path|
           @logger.info(I18n.t('syncer.states.watching', {
             path: path.absolute_path,
-            adapter: path.listener_class,
+            listener: path.listener_name,
             interval: path.listener_interval
           }))
           path.listen

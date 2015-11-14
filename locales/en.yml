@@ -4,11 +4,9 @@ en:
       undefined: "Missing syncer.config definition in Vagrantfile."
     states:
       initial: "Doing a full sync to get the remote up to date."
-      watching: "Watching file changes in %{path} (via %{adapter} every %{interval} seconds)"
+      watching: "Watching %{path} for changes (via %{listener}) every %{interval} seconds."
       changed: "Changed: %{paths}"
-      synced: "Synced: %{paths}"
     rsync:
-      success: "Rsynced: "
-      bytes_sent: "%{bytes}B sent"
+      succeeded: "Rsynced: %{output}"
       failed: "Rsync failed: %{error}"
       failed_command: "The failed command was: %{command}"

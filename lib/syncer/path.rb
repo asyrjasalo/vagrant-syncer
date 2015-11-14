@@ -6,29 +6,19 @@ module Vagrant
   module Syncer
     class Path
 
-      attr_accessor :do_initial,
-        :do_continuous,
-        :absolute_path,
-        :listener_class,
-        :listener_interval
+      attr_accessor :do_initial, :do_continuous, :absolute_path,
+        :listener_name, :listener_interval
 
-      def initialize(path, machine)
-        @source_path = path[:source][:path]
-        @syncer = Syncers::Rsync.new(path, machine)
+      def initialize(path_opts, machine)
+        @logger = machine.ui
+        @source_path = path_opts[:guestpath]
+        @syncer = Syncers::Rsync.new(path_opts, machine)
         @absolute_path = File.expand_path(@source_path, machine.env.root_path)
 
-        @do_initial = path[:source][:initial] || true
-        @do_continuous = path[:source][:continuous] || true
-
-        if path[:source][:listener]
-          @listener_verbose = path[:source][:listener][:verbose]
-          @listener_interval = path[:source][:listener][:interval]
-        end
-
-        @listener_verbose ||= false
-        @listener_interval ||= 0.1
-
-        @logger = machine.ui  if @listener_verbose
+        @do_initial = machine.config.syncer.initial
+        @do_continuous = machine.config.syncer.continuous
+        @listener_verbose = machine.config.syncer.verbose
+        @listener_interval = machine.config.syncer.interval
 
         if @do_continuous
           case Vagrant::Util::Platform.platform
@@ -43,8 +33,7 @@ module Vagrant
             @listener_class = Vagrant::Syncer::Listeners::Listen
           end
 
-          require_relative 'listeners/listen'
-          @listener_class = Vagrant::Syncer::Listeners::Listen
+          @listener_name = @listener_class.to_s.gsub(/^.*::/, '')
 
           listener_settings = {
             latency: @listener_interval
@@ -52,9 +41,9 @@ module Vagrant
 
           @listener = @listener_class.new(
             @absolute_path,
-            path[:source][:excludes],
+            path_opts[:rsync__excludes],
             listener_settings,
-            change_handler
+            change_callback
           )
         end
       end
@@ -69,10 +58,10 @@ module Vagrant
 
       private
 
-      def change_handler
+      def change_callback
         Proc.new do |changed|
-          @logger.warn(I18n.t('syncer.states.changed',
-            paths: changed.to_a.join(', ')))  if @listener_verbose
+          @logger.info(@listener_name + ": " +
+            changed.join(', '))  if @listener_verbose
           @syncer.sync(changed)
         end
       end

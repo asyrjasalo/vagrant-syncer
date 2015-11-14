@@ -6,11 +6,28 @@ Vagrant.configure(2) do |config|
 
   config.vm.synced_folder '.', '/vagrant', disabled: true
 
-  config.vm.synced_folder "/Users/asyrjasalo/linux", "/home/vagrant/linux",
-    type: 'rsync',
-    rsync__args: ["--archive", "--delete", "--force"]
+  config.vm.synced_folder "files", "files", type: 'rsync',
+    rsync__args: [
+      "--archive",
+      "--delete",
+      "--force"
+    ],
+    rsync__excludes: [
+      "/excluded_file.txt",
+      "/excluded_directory",
+      "excluded_nested_file.txt",
+      "excluded_nested_directory",
+      "*.not"
+    ]
 
-  config.syncer.config = "syncer.json"
+  config.syncer.interval = 0.1
+  config.syncer.verbose = true
+  config.syncer.initial = true
+  config.syncer.continuous = true
+  config.syncer.ssh_args = [
+    "-o StrictHostKeyChecking=no",
+    "-o UserKnownHostsFile=/dev/null"
+  ]
 
   config.ssh.username = 'vagrant'
   config.ssh.forward_agent = true

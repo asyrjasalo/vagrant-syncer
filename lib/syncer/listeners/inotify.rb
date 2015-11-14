@@ -29,7 +29,7 @@ module Vagrant
             rescue Timeout::Error
             end
 
-            @callback.call(directories)  unless directories.empty?
+            @callback.call(directories.to_a)  unless directories.empty?
           end
         end
       end

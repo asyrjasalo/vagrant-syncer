@@ -6,20 +6,19 @@ module Vagrant
     module Syncers
       class Rsync
 
-        def initialize(path, machine)
+        def initialize(path_opts, machine)
           @machine = machine
           @logger = machine.ui
 
           @machine_path = machine.env.root_path.to_s
-          @host_path = parse_host_path(path[:source][:path])
-          @rsync_args = parse_rsync_args(path[:target][:args][:rsync],
-            path[:target][:permissions])
-          @ssh_command = parse_ssh_command(path[:target][:args][:ssh])
-          @exclude_args = parse_exclude_args(path[:source][:excludes])
+          @host_path = parse_host_path(path_opts[:hostpath])
+          @rsync_args = parse_rsync_args(path_opts[:rsync__args])
+          @ssh_command = parse_ssh_command(machine.config.syncer.ssh_args)
+          @exclude_args = parse_exclude_args(path_opts[:rsync__excludes])
 
           ssh_username = machine.ssh_info[:username]
           ssh_host = machine.ssh_info[:host]
-          guest_path = path[:target][:path]
+          guest_path = path_opts[:guestpath]
           @ssh_target = "#{ssh_username}@#{ssh_host}:#{guest_path}"
         end
 
@@ -46,9 +45,8 @@ module Vagrant
             @logger.error(I18n.t('syncer.rsync.failed_command',
               command: command.join(' ')))
           else
-            unless result.stdout.empty?
-              @logger.success(result.stdout.gsub("#{@machine_path[1..-1]}/", ''))
-            end
+            @logger.success(I18n.t('syncer.rsync.succeeded',
+              output: result.stdout))  unless result.stdout.empty?
           end
         end
 
@@ -73,7 +71,7 @@ module Vagrant
 
         def parse_exclude_args(excludes=nil)
           excludes ||= []
-          excludes << '.vagrant/'  # always exclude .vagrant directory
+          excludes << '.vagrant/'  # in any case, exclude .vagrant directory
           excludes.uniq.map { |e| ["--exclude", e] }
         end
 
@@ -97,34 +95,24 @@ module Vagrant
         end
 
         def parse_rsync_args(rsync_args=nil, permissions=nil)
-          rsync_args ||= ["--archive", "--force", "--delete"]
+          rsync_args ||= ["--archive", "--delete", "--compress",
+            "--copy-links", "--verbose"]
 
           # This is the default rsync output unless overridden
-          rsync_args.unshift("--out-format=#{I18n.t('syncer.rsync.success')}" +
-            "%L%f (%bB)")
+          rsync_args.unshift("--out-format=%L%n")
 
-          # If --chmod args are given to rsync, prefer them instead
           rsync_chmod_args_given = rsync_args.any? do |arg|
             arg.start_with?("--chmod=")
           end
 
-          if !rsync_chmod_args_given
-            # On Windows, enable all non-masked bits to avoid permission issues
-            if Vagrant::Util::Platform.windows?
-              rsync_args << "--chmod=ugo=rwX"
+          # On Windows, enable all non-masked bits to avoid permission issues
+          if Vagrant::Util::Platform.windows? && !rsync_chmod_args_given
+            rsync_args << "--chmod=ugo=rwX"
 
-              # Remove the -p option if --archive (equals -rlptgoD) is given
-              # Otherwise new files won't get the destination-default permissions
-              if rsync_args.include?("--archive") || rsync_args.include?("-a")
-                rsync_args << "--no-perms"
-              end
-            else
-              # On other OSes, convert our config defined permissions to --chmod args
-              if permissions
-                rsync_args << "--chmod=u=#{permissions[:user]}"   if permissions[:user]
-                rsync_args << "--chmod=g=#{permissions[:group]}"  if permissions[:group]
-                rsync_args << "--chmod=o=#{permissions[:other]}"  if permissions[:other]
-              end
+            # Remove the -p option if --archive (equals -rlptgoD) is given
+            # Otherwise new files won't get the destination-default permissions
+            if rsync_args.include?("--archive") || rsync_args.include?("-a")
+              rsync_args << "--no-perms"
             end
           end
 
