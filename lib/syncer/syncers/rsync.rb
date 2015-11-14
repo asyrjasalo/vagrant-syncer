@@ -12,7 +12,9 @@ module Vagrant
 
           @machine_path = machine.env.root_path.to_s
           @host_path = parse_host_path(path_opts[:hostpath])
-          @rsync_args = parse_rsync_args(path_opts[:rsync__args])
+          @rsync_args = parse_rsync_args(path_opts[:rsync__args],
+            path_opts[:rsync__rsync_path])
+          @rsync_verbose = path_opts[:rsync__verbose] || false
           @ssh_command = parse_ssh_command(machine.config.syncer.ssh_args)
           @exclude_args = parse_exclude_args(path_opts[:rsync__exclude])
 
@@ -20,6 +22,21 @@ module Vagrant
           ssh_host = machine.ssh_info[:host]
           guest_path = path_opts[:guestpath]
           @ssh_target = "#{ssh_username}@#{ssh_host}:#{guest_path}"
+
+          @vagrant_rsync_opts = {
+            guestpath: guest_path,
+            chown: path_opts[:rsync__chown],
+            owner: path_opts[:owner],
+            group: path_opts[:group]
+          }
+          @vagrant_rsync_opts[:chown] ||= true
+          @vagrant_rsync_opts[:owner] ||= ssh_username
+          if @vagrant_rsync_opts[:group].nil?
+            machine.communicate.execute('id -gn') do |type, output|
+              @vagrant_rsync_opts[:group] = output.chomp  if type == :stdout
+            end
+          end
+
         end
 
         def sync(changed_paths=nil)
@@ -35,6 +52,11 @@ module Vagrant
             @ssh_target
           ].flatten
 
+          # Create the target directory if not exists
+          if @machine.guest.capability?(:rsync_pre)
+            @machine.guest.capability(:rsync_pre, @vagrant_rsync_opts)
+          end
+
           result = Vagrant::Util::Subprocess.execute(
             *(command + [{ workdir: @machine_path }])
           )
@@ -44,9 +66,17 @@ module Vagrant
               error: result.stderr))
             @logger.error(I18n.t('syncer.rsync.failed_command',
               command: command.join(' ')))
-          else
+            return
+          end
+
+          if @rsync_verbose
             @logger.success(I18n.t('syncer.rsync.succeeded',
               output: result.stdout))  unless result.stdout.empty?
+          end
+
+          # Set owner/group after the files are transferred
+          if @machine.guest.capability?(:rsync_post)
+            @machine.guest.capability(:rsync_post, @vagrant_rsync_opts)
           end
         end
 
@@ -94,7 +124,7 @@ module Vagrant
           ].flatten.join(' ')
         end
 
-        def parse_rsync_args(rsync_args=nil, permissions=nil)
+        def parse_rsync_args(rsync_args=nil, rsync_path=nil)
           rsync_args ||= ["--archive", "--delete", "--compress",
             "--copy-links", "--verbose"]
 
@@ -115,6 +145,22 @@ module Vagrant
               rsync_args << "--no-perms"
             end
           end
+
+          # Disable rsync's owner/group preservation (implied by --archive)
+          # unless explicitly requested, since we adjust owner/group later
+          # ourselves
+          unless rsync_args.include?("--owner") || rsync_args.include?("-o")
+            rsync_args << "--no-owner"
+          end
+          unless rsync_args.include?("--group") || rsync_args.include?("-g")
+            rsync_args << "--no-group"
+          end
+
+          # invoke remote rsync with sudo to allow changing owner/group
+          if !rsync_path && @machine.guest.capability?(:rsync_command)
+            rsync_path = @machine.guest.capability(:rsync_command)
+          end
+          rsync_args << "--rsync-path" << rsync_path  if rsync_path
 
           rsync_args
         end
