@@ -52,21 +52,21 @@ module Vagrant
 
         private
 
-        def parse_host_path(source_path)
-          host_path = File.expand_path(source_path, @machine_path)
-          host_path = Vagrant::Util::Platform.fs_real_path(host_path).to_s
+        def parse_host_path(host_dir)
+          abs_host_path = File.expand_path(host_dir, @machine_path)
+          abs_host_path = Vagrant::Util::Platform.fs_real_path(abs_host_path).to_s
 
           # Rsync on Windows expects Cygwin style paths
           if Vagrant::Util::Platform.windows?
-            host_path = Vagrant::Util::Platform.cygwin_path(host_path)
+            abs_host_path = Vagrant::Util::Platform.cygwin_path(abs_host_path)
           end
 
-          # Prevent creating directory inside directory
-          if File.directory?(host_path) && !host_path.end_with?("/")
-            host_path += "/"
+          # Ensure path ends with '/' to prevent creating directory inside directory
+          if !abs_host_path.end_with?("/")
+            abs_host_path += "/"
           end
 
-          host_path
+          abs_host_path
         end
 
         def parse_exclude_args(excludes=nil)
