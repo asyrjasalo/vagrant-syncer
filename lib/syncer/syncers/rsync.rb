@@ -2,7 +2,7 @@ require "vagrant/util/platform"
 require "vagrant/util/subprocess"
 
 module Vagrant
-  module Spindle
+  module Syncer
     module Syncers
       class Rsync
 
@@ -41,9 +41,9 @@ module Vagrant
           )
 
           if result.exit_code != 0
-            @logger.error(I18n.t('spindle.rsync.failed',
+            @logger.error(I18n.t('syncer.rsync.failed',
               error: result.stderr))
-            @logger.error(I18n.t('spindle.rsync.failed_command',
+            @logger.error(I18n.t('syncer.rsync.failed_command',
               command: command.join(' ')))
           else
             unless result.stdout.empty?
@@ -100,7 +100,7 @@ module Vagrant
           rsync_args ||= ["--archive", "--force", "--delete"]
 
           # This is the default rsync output unless overridden
-          rsync_args.unshift("--out-format=#{I18n.t('spindle.rsync.success')}" +
+          rsync_args.unshift("--out-format=#{I18n.t('syncer.rsync.success')}" +
             "%L%f (%bB)")
 
           # If --chmod args are given to rsync, prefer them instead

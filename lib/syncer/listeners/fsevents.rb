@@ -1,7 +1,7 @@
 require "rb-fsevent"
 
 module Vagrant
-  module Spindle
+  module Syncer
     module Listeners
       class FSEvents
 

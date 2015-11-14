@@ -1,7 +1,7 @@
 module Vagrant
-  module Spindle
+  module Syncer
     module Commands
-      class Spindle < Vagrant.plugin(2, :command)
+      class Syncer < Vagrant.plugin(2, :command)
 
         def self.synopsis
           "continuously rsyncs the changed files to the guest"
@@ -9,9 +9,9 @@ module Vagrant
 
         def execute
           with_target_vms do |machine|
-            unless machine.config.spindle.settings
+            unless machine.config.syncer.settings
               raise Vagrant::Errors::VagrantError.new,
-                I18n.t('spindle.config.undefined')
+                I18n.t('syncer.config.undefined')
             end
 
             machine = Machine.new(machine)

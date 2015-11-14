@@ -1,7 +1,7 @@
 require "rb-inotify"
 
 module Vagrant
-  module Spindle
+  module Syncer
     module Listeners
       class INotify
 

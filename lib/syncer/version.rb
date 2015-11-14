@@ -1,5 +1,5 @@
 module Vagrant
-  module Spindle
+  module Syncer
     VERSION = "0.1.0"
   end
 end

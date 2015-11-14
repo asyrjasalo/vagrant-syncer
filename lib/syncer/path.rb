@@ -3,7 +3,7 @@ require 'vagrant/util/platform'
 require_relative 'syncers/rsync'
 
 module Vagrant
-  module Spindle
+  module Syncer
     class Path
 
       attr_accessor :do_initial,
@@ -34,17 +34,17 @@ module Vagrant
           case Vagrant::Util::Platform.platform
           when /darwin/
             require_relative 'listeners/fsevents'
-            @listener_class = Vagrant::Spindle::Listeners::FSEvents
+            @listener_class = Vagrant::Syncer::Listeners::FSEvents
           when /linux/
             require_relative 'listeners/inotify'
-            @listener_class = Vagrant::Spindle::Listeners::INotify
+            @listener_class = Vagrant::Syncer::Listeners::INotify
           else
             require_relative 'listeners/listen'
-            @listener_class = Vagrant::Spindle::Listeners::Listen
+            @listener_class = Vagrant::Syncer::Listeners::Listen
           end
 
           require_relative 'listeners/listen'
-          @listener_class = Vagrant::Spindle::Listeners::Listen
+          @listener_class = Vagrant::Syncer::Listeners::Listen
 
           listener_settings = {
             latency: @listener_interval
@@ -71,7 +71,7 @@ module Vagrant
 
       def change_handler
         Proc.new do |changed|
-          @logger.warn(I18n.t('spindle.states.changed',
+          @logger.warn(I18n.t('syncer.states.changed',
             paths: changed.to_a.join(', ')))  if @listener_verbose
           @syncer.sync(changed)
         end

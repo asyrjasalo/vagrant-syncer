@@ -4,9 +4,13 @@
 Vagrant.configure(2) do |config|
   config.vm.box = 'ubuntu/trusty64'
 
-  config.vm.synced_folder '.', 'vagrant/', disabled: true
+  config.vm.synced_folder '.', '/vagrant', disabled: true
 
-  config.spindle.config = 'spindle.json'
+  config.vm.synced_folder "/Users/asyrjasalo/linux", "/home/vagrant/linux",
+    type: 'rsync',
+    rsync__args: ["--archive", "--delete", "--force"]
+
+  config.syncer.config = "syncer.json"
 
   config.ssh.username = 'vagrant'
   config.ssh.forward_agent = true

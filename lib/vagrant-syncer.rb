@@ -4,14 +4,14 @@ rescue LoadError
   raise "This plugin must be run within Vagrant."
 end
 
-require 'spindle/actions'
-require 'spindle/machine'
-require 'spindle/path'
-require 'spindle/plugin'
-require 'spindle/version'
+require 'syncer/actions'
+require 'syncer/machine'
+require 'syncer/path'
+require 'syncer/plugin'
+require 'syncer/version'
 
 module Vagrant
-  module Spindle
+  module Syncer
 
     def self.source_root
       @source_root ||= Pathname.new(File.expand_path('../../', __FILE__))

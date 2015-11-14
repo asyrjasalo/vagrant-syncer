@@ -1,32 +1,32 @@
 module Vagrant
-  module Spindle
+  module Syncer
     class Plugin < Vagrant.plugin(2)
 
-      name "Spindle"
+      name "Syncer"
       description <<-DESC
       Watches the changed files on the host and rsyncs them to the guest.
       DESC
 
-      config "spindle" do
-        require 'spindle/config'
-        Vagrant::Spindle::Config
+      config "syncer" do
+        require 'syncer/config'
+        Vagrant::Syncer::Config
       end
 
-      command "spindle" do
-        require 'spindle/commands/spindle'
-        Vagrant::Spindle::Commands::Spindle
+      command "syncer" do
+        require 'syncer/commands/syncer'
+        Vagrant::Syncer::Commands::Syncer
       end
 
       action_hook :initial, :machine_action_up do |hook|
-        hook.append Vagrant::Spindle::Actions::Up
+        hook.append Vagrant::Syncer::Actions::Up
       end
 
       action_hook :initial, :machine_action_reload do |hook|
-        hook.append Vagrant::Spindle::Actions::Reload
+        hook.append Vagrant::Syncer::Actions::Reload
       end
 
       action_hook :initial, :machine_action_resume do |hook|
-        hook.append Vagrant::Spindle::Actions::Resume
+        hook.append Vagrant::Syncer::Actions::Resume
       end
 
     end

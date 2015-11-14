@@ -2,7 +2,7 @@ require 'listen'
 require 'vagrant/util/busy'
 
 module Vagrant
-  module Spindle
+  module Syncer
     module Listeners
       class Listen
 

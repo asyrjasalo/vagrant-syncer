@@ -1,5 +1,5 @@
 module Vagrant
-  module Spindle
+  module Syncer
     module Actions
       class Base
         def initialize(app, env)
@@ -9,7 +9,7 @@ module Vagrant
 
       class Up < Base
         def call(env)
-          return  unless env[:machine].config.spindle.settings
+          return  unless env[:machine].config.syncer.settings
           machine = Machine.new(env[:machine])
           machine.full
           @app.call(env)
