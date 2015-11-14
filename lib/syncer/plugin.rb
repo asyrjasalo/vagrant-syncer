@@ -4,7 +4,7 @@ module Vagrant
 
       name "Syncer"
       description <<-DESC
-      Watches the changed files on the host and rsyncs them to the guest.
+      Watches for changed files on the host and synchronizes them to the guest.
       DESC
 
       config "syncer" do

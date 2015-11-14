@@ -4,7 +4,7 @@ module Vagrant
       class Syncer < Vagrant.plugin(2, :command)
 
         def self.synopsis
-          "continuously rsyncs the changed files to the guest"
+          "start watching for changed files to synchronize them to the machine"
         end
 
         def execute
