@@ -23,6 +23,7 @@ module Vagrant
           guest_path = path_opts[:guestpath]
           @ssh_target = "#{ssh_username}@#{ssh_host}:#{guest_path}"
 
+          @vagrant_command_opts = { workdir: @machine_path }
           @vagrant_rsync_opts = {
             guestpath: guest_path,
             chown: path_opts[:rsync__chown],
@@ -57,21 +58,32 @@ module Vagrant
             @machine.guest.capability(:rsync_pre, @vagrant_rsync_opts)
           end
 
-          result = Vagrant::Util::Subprocess.execute(
-            *(command + [{ workdir: @machine_path }])
-          )
+          # If verbose true, print the rsync command output
+          if @rsync_verbose
+            @vagrant_command_opts[:notify] = [:stdout, :stderr]
+            result = Vagrant::Util::Subprocess.execute(
+              *(command + [@vagrant_command_opts])) do |io_name, data|
+                data.each_line do |line|
+                  if io_name == :stdout
+                    @logger.success("Rsync: #{line}")
+                  elsif io_name == :stderr && !line =~ /Permanently added/
+                    @logger.warn("Rsync: #{line}")
+                  end
+                end
+              end
+          else
+            result = Vagrant::Util::Subprocess.execute(
+              *(command + [@vagrant_command_opts])
+            )
+          end
 
+          # Always output the errors if the rsync command failed
           if result.exit_code != 0
             @logger.error(I18n.t('syncer.rsync.failed',
               error: result.stderr))
             @logger.error(I18n.t('syncer.rsync.failed_command',
               command: command.join(' ')))
             return
-          end
-
-          if @rsync_verbose
-            @logger.success(I18n.t('syncer.rsync.succeeded',
-              output: result.stdout))  unless result.stdout.empty?
           end
 
           # Set owner/group after the files are transferred
