@@ -1,6 +1,5 @@
 require 'vagrant/action/builtin/mixin_synced_folders'
 
-
 module Vagrant
   module Syncer
     class Machine
@@ -11,7 +10,10 @@ module Vagrant
         @logger = machine.ui
         @paths = []
 
-        synced_folders(machine)[:rsync].each do |id, folder_opts|
+        synced_folders = synced_folders(machine)[:rsync]
+        return  unless synced_folders
+
+        synced_folders.each do |id, folder_opts|
           @paths << Path.new(folder_opts, machine)
         end
       end
