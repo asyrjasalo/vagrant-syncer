@@ -13,7 +13,7 @@ module Vagrant
         end
 
         def run
-          notifier = INotify::Notifier.new
+          notifier = ::INotify::Notifier.new
           notifier.watch(@absolute_path, :modify, :create, :delete, :recursive) {}
 
           loop do
