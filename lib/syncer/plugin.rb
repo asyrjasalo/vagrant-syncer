@@ -17,18 +17,6 @@ module Vagrant
         Vagrant::Syncer::Commands::Syncer
       end
 
-      action_hook :initial, :machine_action_up do |hook|
-        hook.append Vagrant::Syncer::Actions::Up
-      end
-
-      action_hook :initial, :machine_action_reload do |hook|
-        hook.append Vagrant::Syncer::Actions::Reload
-      end
-
-      action_hook :initial, :machine_action_resume do |hook|
-        hook.append Vagrant::Syncer::Actions::Resume
-      end
-
     end
   end
 end

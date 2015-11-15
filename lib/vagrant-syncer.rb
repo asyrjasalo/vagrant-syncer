@@ -4,7 +4,6 @@ rescue LoadError
   raise "This plugin must be run within Vagrant."
 end
 
-require 'syncer/actions'
 require 'syncer/machine'
 require 'syncer/path'
 require 'syncer/plugin'

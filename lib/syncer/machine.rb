@@ -19,14 +19,14 @@ module Vagrant
       end
 
       def full
-        @paths.select(&:do_initial).each do |path|
+        @paths.each do |path|
           @logger.info(I18n.t('syncer.states.initial'))
           path.initial
         end
       end
 
       def listen
-        @paths.select(&:do_continuous).each do |path|
+        @paths.each do |path|
           @logger.info(I18n.t('syncer.states.watching', {
             path: path.absolute_path,
             listener: path.listener_name,
