@@ -18,6 +18,7 @@ module Vagrant
         Vagrant::Syncer::Commands::Syncer
       end
 
+      # TODO: generate these three using Ruby's metaprogramming
       action_hook "start-syncer", :machine_action_up do |hook|
         hook.append Vagrant::Syncer::Actions::StartSyncer
       end
