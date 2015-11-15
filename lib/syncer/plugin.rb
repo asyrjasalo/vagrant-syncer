@@ -18,9 +18,16 @@ module Vagrant
         Vagrant::Syncer::Commands::Syncer
       end
 
-      action_hook "start-syncer" do |hook|
-        hook.after Vagrant::Action::Builtin::SyncedFolders,
-          Vagrant::Syncer::Actions::StartSyncer
+      action_hook "start-syncer", :machine_action_up do |hook|
+        hook.append Vagrant::Syncer::Actions::StartSyncer
+      end
+
+      action_hook "start-syncer", :machine_action_reload do |hook|
+        hook.append Vagrant::Syncer::Actions::StartSyncer
+      end
+
+      action_hook "start-syncer", :machine_action_resume do |hook|
+        hook.append Vagrant::Syncer::Actions::StartSyncer
       end
 
     end
