@@ -142,7 +142,7 @@ module Vagrant
           rsync_args ||= ["--archive", "--delete", "--compress",
             "--copy-links", "--verbose"]
 
-          # This is the default rsync output unless overridden
+          # This is the default rsync output unless overridden by user
           rsync_args.unshift("--out-format=%L%n")
 
           rsync_chmod_args_given = rsync_args.any? do |arg|
