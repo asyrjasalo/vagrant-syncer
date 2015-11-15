@@ -43,7 +43,7 @@ module Vagrant
         )
       end
 
-      def initial
+      def initial_sync
         @syncer.sync
       end
 
@@ -55,8 +55,9 @@ module Vagrant
 
       def change_callback
         Proc.new do |changed|
-          @logger.info(@listener_name + ": " +
-            changed.join(', '))  if @listener_verbose
+          if @listener_verbose
+            @logger.info(@listener_name + ": " + changed.join(', '))
+          end
           @syncer.sync(changed)
         end
       end

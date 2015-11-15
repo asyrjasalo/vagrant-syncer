@@ -18,10 +18,12 @@ module Vagrant
         end
       end
 
-      def full
+      def full_sync
         @paths.each do |path|
-          @logger.info(I18n.t('syncer.states.initial'))
-          path.initial
+          @logger.info(I18n.t('syncer.states.initial',
+            path: path.absolute_path
+          ))
+          path.initial_sync
         end
       end
 

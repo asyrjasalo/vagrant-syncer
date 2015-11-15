@@ -24,6 +24,7 @@ module Vagrant
           @ssh_target = "#{ssh_username}@#{ssh_host}:#{guest_path}"
 
           @vagrant_command_opts = { workdir: @machine_path }
+
           @vagrant_rsync_opts = {
             guestpath: guest_path,
             chown: path_opts[:rsync__chown],
@@ -37,7 +38,6 @@ module Vagrant
               @vagrant_rsync_opts[:group] = output.chomp  if type == :stdout
             end
           end
-
         end
 
         def sync(changed_paths=nil)
