@@ -2,8 +2,11 @@
 
 ## 1.0 TODO
 
-- verify rb-inotify on GNU/Linux
-- verify Listen (WDM) and polling on Windows
-- add acceptance tests (especially for exclusions)
-- write this README.md (plugin settings, listener improvements)
+- write this file
+- add acceptance tests for exclusions
 - package this plugin and submit it to Rubygems
+
+## 1.1 TODO
+
+- verify Listen (WDM) and polling on Windows
+
