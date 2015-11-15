@@ -12,8 +12,7 @@ module Vagrant
 
           @machine_path = machine.env.root_path.to_s
           @host_path = parse_host_path(path_opts[:hostpath])
-          @rsync_args = parse_rsync_args(path_opts[:rsync__args],
-            path_opts[:rsync__rsync_path])
+          @rsync_args = parse_rsync_args(path_opts[:rsync__args], path_opts[:rsync__rsync_path])
           @rsync_verbose = path_opts[:rsync__verbose] || false
           @ssh_command = parse_ssh_command(machine.config.syncer.ssh_args)
           @exclude_args = parse_exclude_args(path_opts[:rsync__exclude])
@@ -49,7 +48,7 @@ module Vagrant
         def sync(changed_paths=nil)
           changed_paths ||= [@host_path]
 
-          command = [
+          rsync_command = [
             "rsync",
             @rsync_args,
             "-e", @ssh_command,
@@ -59,31 +58,28 @@ module Vagrant
             @ssh_target
           ].flatten
 
+          rsync_vagrant_command = rsync_command + [@vagrant_command_opts]
+
           # If verbose true, print the rsync command output
           if @rsync_verbose
             @vagrant_command_opts[:notify] = [:stdout, :stderr]
-            result = Vagrant::Util::Subprocess.execute(
-              *(command + [@vagrant_command_opts])) do |io_name, data|
-                data.each_line do |line|
-                  if io_name == :stdout
-                    @logger.success("Rsync: #{line}")
-                  elsif io_name == :stderr && !line =~ /Permanently added/
-                    @logger.warn("Rsync: #{line}")
-                  end
+            result = Vagrant::Util::Subprocess.execute(*rsync_vagrant_command) do |io_name, data|
+              data.each_line do |line|
+                if io_name == :stdout
+                  @logger.success("Rsync: #{line}")
+                elsif io_name == :stderr && !line =~ /Permanently added/
+                  @logger.warn("Rsync: #{line}")
                 end
               end
+            end
           else
-            result = Vagrant::Util::Subprocess.execute(
-              *(command + [@vagrant_command_opts])
-            )
+            result = Vagrant::Util::Subprocess.execute(*rsync_vagrant_command)
           end
 
           # Always output the errors if the rsync command failed
           if result.exit_code != 0
-            @logger.error(I18n.t('syncer.rsync.failed',
-              error: result.stderr))
-            @logger.error(I18n.t('syncer.rsync.failed_command',
-              command: command.join(' ')))
+            @logger.error(I18n.t('syncer.rsync.failed', error: result.stderr))
+            @logger.error(I18n.t('syncer.rsync.failed_command', command: command.join(' ')))
             return
           end
 
@@ -139,8 +135,7 @@ module Vagrant
         end
 
         def parse_rsync_args(rsync_args=nil, rsync_path=nil)
-          rsync_args ||= ["--archive", "--delete", "--compress",
-            "--copy-links", "--verbose"]
+          rsync_args ||= ["--archive", "--delete", "--compress", "--copy-links", "--verbose"]
 
           # This is the default rsync output unless overridden by user
           rsync_args.unshift("--out-format=%L%n")
@@ -160,9 +155,8 @@ module Vagrant
             end
           end
 
-          # Disable rsync's owner/group preservation (implied by --archive)
-          # unless explicitly requested, since we adjust owner/group later
-          # ourselves
+          # Disable rsync's owner/group preservation (implied by --archive) unless
+          # explicitly requested, since we adjust owner/group later ourselves
           unless rsync_args.include?("--owner") || rsync_args.include?("-o")
             rsync_args << "--no-owner"
           end
@@ -176,7 +170,7 @@ module Vagrant
           end
           rsync_args << "--rsync-path" << rsync_path  if rsync_path
 
-          rsync_args
+          rsync_args  # explicit return for clarity
         end
 
       end
