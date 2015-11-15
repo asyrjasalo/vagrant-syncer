@@ -4,6 +4,5 @@ en:
       initial: "Doing a full sync for %{path} to get the machine up to date."
       watching: "Watching %{path} for changes (via %{listener}) every %{interval} seconds."
     rsync:
-      succeeded: "Rsynced: %{output}"
       failed: "Rsync failed: %{error}"
       failed_command: "The failed command was: %{command}"
