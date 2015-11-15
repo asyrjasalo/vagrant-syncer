@@ -12,7 +12,7 @@ module Vagrant
       end
 
       def finalize!
-        @interval = 0.1          if @interval == UNSET_VALUE
+        @interval = 0.2          if @interval == UNSET_VALUE
         @run_on_startup = false  if @run_on_startup == UNSET_VALUE
         @show_events = false     if @show_events == UNSET_VALUE
         @ssh_args = nil          if @ssh_args == UNSET_VALUE
