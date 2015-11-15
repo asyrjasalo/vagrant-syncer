@@ -6,8 +6,6 @@ module Vagrant
   module Syncer
     class Path
 
-      attr_accessor :absolute_path, :listener_name, :listener_interval
-
       def initialize(path_opts, machine)
         @logger = machine.ui
         @source_path = path_opts[:hostpath]
@@ -44,10 +42,16 @@ module Vagrant
       end
 
       def initial_sync
+        @logger.info(I18n.t('syncer.states.initial', path: @absolute_path))
         @syncer.sync
       end
 
       def listen
+        @logger.info(I18n.t('syncer.states.watching', {
+          path: @absolute_path,
+          listener: @listener_name,
+          interval: @listener_interval
+        }))
         @listener.run
       end
 

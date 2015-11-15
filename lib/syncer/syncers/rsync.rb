@@ -20,13 +20,14 @@ module Vagrant
 
           ssh_username = machine.ssh_info[:username]
           ssh_host = machine.ssh_info[:host]
-          guest_path = path_opts[:guestpath]
-          @ssh_target = "#{ssh_username}@#{ssh_host}:#{guest_path}"
+          @ssh_target = "#{ssh_username}@#{ssh_host}:#{path_opts[:guestpath]}"
 
-          @vagrant_command_opts = { workdir: @machine_path }
+          @vagrant_command_opts = {
+            workdir: @machine_path
+          }
 
           @vagrant_rsync_opts = {
-            guestpath: guest_path,
+            guestpath: path_opts[:guestpath],
             chown: path_opts[:rsync__chown],
             owner: path_opts[:owner],
             group: path_opts[:group]
@@ -37,6 +38,11 @@ module Vagrant
             machine.communicate.execute('id -gn') do |type, output|
               @vagrant_rsync_opts[:group] = output.chomp  if type == :stdout
             end
+          end
+
+          # Create the target directory on the guest if it does not exist
+          if @machine.guest.capability?(:rsync_pre)
+            @machine.guest.capability(:rsync_pre, @vagrant_rsync_opts)
           end
         end
 
@@ -52,11 +58,6 @@ module Vagrant
             @host_path,
             @ssh_target
           ].flatten
-
-          # Create the target directory if not exists
-          if @machine.guest.capability?(:rsync_pre)
-            @machine.guest.capability(:rsync_pre, @vagrant_rsync_opts)
-          end
 
           # If verbose true, print the rsync command output
           if @rsync_verbose

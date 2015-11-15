@@ -7,7 +7,6 @@ module Vagrant
       include Vagrant::Action::Builtin::MixinSyncedFolders
 
       def initialize(machine)
-        @logger = machine.ui
         @paths = []
 
         synced_folders = synced_folders(machine)[:rsync]
@@ -19,23 +18,11 @@ module Vagrant
       end
 
       def full_sync
-        @paths.each do |path|
-          @logger.info(I18n.t('syncer.states.initial',
-            path: path.absolute_path
-          ))
-          path.initial_sync
-        end
+        @paths.each(&:initial_sync)
       end
 
       def listen
-        @paths.each do |path|
-          @logger.info(I18n.t('syncer.states.watching', {
-            path: path.absolute_path,
-            listener: path.listener_name,
-            interval: path.listener_interval
-          }))
-          path.listen
-        end
+        @paths.each(&:listen)
       end
 
     end
