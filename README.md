@@ -8,7 +8,7 @@ All the [rsync synced folder settings](https://docs.vagrantup.com/v2/synced-fold
 They also have the same default values.
 
 Vagrant syncer forks [Vagrant's RsyncHelper](https://github.com/mitchellh/vagrant/blob/b721eb62cfbfa93895d0d4cf019436ab6b1df05d/plugins/synced_folders/rsync/helper.rb)
-to make it (c)leaner, instead of using the class, like [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync) does.
+to make it (c)leaner, instead of using the class like [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync) does.
 
 If the optimizations seem to work in heavy use, I'll see if (some of) them
 can be merged to Vagrant core and be submitted as pull requests to
