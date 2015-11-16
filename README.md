@@ -6,7 +6,7 @@ and its efficient listener implementations for watching large hierarchies.
 
 Parts of the code will likely be kindly submitted to the
 [Vagrant core](https://github.com/mitchellh/vagrant) as
-pull requests later, if they seem to function in heavy usage.
+pull requests later, if they seem to work in heavy use.
 
 
 ## Building
