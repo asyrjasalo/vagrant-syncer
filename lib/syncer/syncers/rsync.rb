@@ -76,7 +76,7 @@ module Vagrant
 
           if result.exit_code != 0
             @logger.error(I18n.t('syncer.rsync.failed', error: result.stderr))
-            @logger.error(I18n.t('syncer.rsync.failed_command', command: command.join(' ')))
+            @logger.error(I18n.t('syncer.rsync.failed_command', command: rsync_command.join(' ')))
             return
           end
 
