@@ -1,17 +1,17 @@
 # vagrant syncer
 
-A Vagrant plugin that is an optimized implentation of Vagrant rsync(-auto),
-based heavily on [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync)
-and its great listener implementations for watching large hierarchies.
+A Vagrant plugin that is an optimized implentation of [Vagrant rsync(-auto)](https://github.com/mitchellh/vagrant/tree/b721eb62cfbfa93895d0d4cf019436ab6b1df05d/plugins/synced_folders/rsync),
+based heavily on [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync)'s
+great listener implementations for watching large hierarchies.
 
 Vagrant syncer implements its own rsync loop heavily forked from
 [Vagrant's RsyncHelper](https://github.com/mitchellh/vagrant/blob/b721eb62cfbfa93895d0d4cf019436ab6b1df05d/plugins/synced_folders/rsync/helper.rb),
 instead of using the class, like [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync) does.
 
-All the Vagrant rsync synced folder settings are supported by this plugin.
+All the [rsync synced folder settings](https://docs.vagrantup.com/v2/synced-folders/rsync.html) are supported.
 They also have the same default values.
 
-It the optimizations seem to work in heavy use, I'll see if (some of) them
+If the optimizations seem to work in heavy use, I'll see if (some of) them
 can be merged to Vagrant core and be submitted as pull requests to
 [the official Vagrant repo](https://github.com/mitchellh/vagrant).
 
@@ -28,13 +28,11 @@ bundle install
 ```
 
 Then use it with:
-
 ```
 bundle exec vagrant syncer
 ```
 
 Or outside the bundle:
-
 ```
 ./build_and_install.sh
 vagrant syncer
