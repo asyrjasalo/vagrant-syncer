@@ -167,7 +167,7 @@ module Vagrant
           end
           rsync_args << "--rsync-path" << rsync_path  if rsync_path
 
-          rsync_args  # explicit return for clarity
+          rsync_args
         end
 
       end
