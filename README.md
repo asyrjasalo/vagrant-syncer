@@ -12,8 +12,8 @@ All the Vagrant rsync synced folder settings are supported by this plugin.
 They also have the same default values.
 
 It the optimizations seem to work in heavy use, I'll see if (some of) them
-can be merged to Vagrant core and be submitted as pull requests to the
-[official Vagrant repo](https://github.com/mitchellh/vagrant).
+can be merged to Vagrant core and be submitted as pull requests to
+[the official Vagrant repo](https://github.com/mitchellh/vagrant).
 
 
 ## Building
