@@ -1,6 +1,6 @@
 # vagrant syncer
 
-A Vagrant plugin that is an optimized implentation of [Vagrant rsync(-auto)](https://github.com/mitchellh/vagrant/tree/b721eb62cfbfa93895d0d4cf019436ab6b1df05d/plugins/synced_folders/rsync),
+A Vagrant plugin that is an optimized implementation of [Vagrant rsync(-auto)](https://github.com/mitchellh/vagrant/tree/b721eb62cfbfa93895d0d4cf019436ab6b1df05d/plugins/synced_folders/rsync),
 based heavily on [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync)'s
 great listener implementations for watching large hierarchies.
 
@@ -19,7 +19,6 @@ can be merged to Vagrant core and be submitted as pull requests to
 ## Developing
 
 Clone this repository and install Ruby 2.2.3, using e.g. [rbenv](https://github.com/sstephenson/rbenv).
-
 ```
 cd vagrant-syncer
 rbenv install $(cat .ruby-version)
