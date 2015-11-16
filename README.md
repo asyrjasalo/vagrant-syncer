@@ -2,11 +2,18 @@
 
 A Vagrant plugin that is an optimized implentation of Vagrant rsync(-auto),
 based heavily on [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync)
-and its efficient listener implementations for watching large hierarchies.
+and its great listener implementations for watching large hierarchies.
 
-Parts of the code will likely be kindly submitted to the
-[Vagrant core](https://github.com/mitchellh/vagrant) as
-pull requests later, if they seem to work in heavy use.
+This plugin implements its own rsync loop, heavily forked from
+[Vagrant's RsyncHelper](https://github.com/mitchellh/vagrant/blob/b721eb62cfbfa93895d0d4cf019436ab6b1df05d/plugins/synced_folders/rsync/helper.rb),
+instead of using the class, like [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync) does.
+
+All the Vagrant rsync synced folder settings are supported by this plugin.
+They also have the same default values.
+
+It the optimizations seem to work in heavy use, I'll see if (some of) them
+can be merged to Vagrant core and be submitted as pull requests to the
+[official Vagrant repo](https://github.com/mitchellh/vagrant).
 
 
 ## Building
