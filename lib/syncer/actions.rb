@@ -12,7 +12,7 @@ module Vagrant
 
           return  unless env[:machine].config.syncer.run_on_startup
 
-          # When Vagrant is finished, run our syncer if Vagrant exited successfully
+          # If Vagrant up/reload/resume exited successfully, run this syncer
           at_exit do
             env[:machine].env.cli("syncer")  if $!.status == 0
           end

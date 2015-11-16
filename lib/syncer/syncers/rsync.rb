@@ -59,8 +59,6 @@ module Vagrant
           ].flatten
 
           rsync_vagrant_command = rsync_command + [@vagrant_command_opts]
-
-          # If verbose true, print the rsync command output
           if @rsync_verbose
             @vagrant_command_opts[:notify] = [:stdout, :stderr]
             result = Vagrant::Util::Subprocess.execute(*rsync_vagrant_command) do |io_name, data|
@@ -76,7 +74,6 @@ module Vagrant
             result = Vagrant::Util::Subprocess.execute(*rsync_vagrant_command)
           end
 
-          # Always output the errors if the rsync command failed
           if result.exit_code != 0
             @logger.error(I18n.t('syncer.rsync.failed', error: result.stderr))
             @logger.error(I18n.t('syncer.rsync.failed_command', command: command.join(' ')))
@@ -164,7 +161,7 @@ module Vagrant
             rsync_args << "--no-group"
           end
 
-          # invoke remote rsync with sudo to allow changing owner/group
+          # Invoke remote rsync with sudo to allow changing owner/group
           if !rsync_path && @machine.guest.capability?(:rsync_command)
             rsync_path = @machine.guest.capability(:rsync_command)
           end
