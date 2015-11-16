@@ -16,36 +16,32 @@ can be merged to Vagrant core and be submitted as pull requests to
 [the official Vagrant repo](https://github.com/mitchellh/vagrant).
 
 
-## Building
+## Developing
 
-Clone this repository and install Ruby 2.2.3, using e.g. rbenv.
+Clone this repository and install Ruby 2.2.3, using e.g. [rbenv](https://github.com/sstephenson/rbenv).
 
-```bash
+```
 cd vagrant-syncer
 rbenv install $(cat .ruby-version)
 gem install bundler -v1.10.5
 bundle install
-./build_and_install.sh
 ```
+
+Then use it with:
+```
+bundle exec vagrant up
+```
+
+Or outside the bundle:
+
+```
+./build_and_install
+vagrant up
+```
+
 
 ## Usage
 
-```bash
+```
 vagrant syncer
 ```
-
-## 1.0 TODO
-
-- commit a proper README.md
-- add Vagrant Specs and/or RF SSHLibrary tests
-- `vagrant plugin install vagrant-syncer`
-
-## 1.1 TODO
-
-- test Listen (WDM) and direct wdm.gem implementation on Windows (7, 8.1, 10)
-- considerations for additional backends than rsync?
-
-## Later TODO
-
-- test Listen (kqueue) on FreeBSD/NetBSD
-- maybe even on Solaris and SmartOS?
