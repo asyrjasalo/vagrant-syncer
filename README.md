@@ -28,15 +28,16 @@ bundle install
 ```
 
 Then use it with:
+
 ```
-bundle exec vagrant up
+bundle exec vagrant syncer
 ```
 
 Or outside the bundle:
 
 ```
 ./build_and_install
-vagrant up
+vagrant syncer
 ```
 
 
