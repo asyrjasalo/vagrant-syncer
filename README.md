@@ -36,7 +36,7 @@ bundle exec vagrant syncer
 Or outside the bundle:
 
 ```
-./build_and_install
+./build_and_install.sh
 vagrant syncer
 ```
 
