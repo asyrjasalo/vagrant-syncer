@@ -61,11 +61,11 @@ Or outside the bundle:
 Hashicorp for [Vagrant](https://github.com/mitchellh/vagrant), even though
 its future will be overshadowed by [Otto](https://github.com/hashicorp/otto).
 
-[vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync) for more suitable listener
+[vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync) for faster listener
 implementations for large file hierarchies.
 
-[rb-fsevent](https://github.com/thibaudgg/rb-fsevent) for FSEvents API access on OS/X.
+[Listen](https://github.com/guard/listen) for OS independent watcher API, and
+
+[rb-fsevent](https://github.com/thibaudgg/rb-fsevent) for FSEvents API access on OS/X, and
 
 [rb-inotify](https://github.com/nex3/rb-inotify) for inotify API access on GNU/Linux.
-
-[Listen](https://github.com/guard/listen) for OS independent watcher API.
