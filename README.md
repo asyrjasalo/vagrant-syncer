@@ -4,7 +4,6 @@ A Vagrant plugin that is an optimized implementation of [Vagrant rsync(-auto)](h
 based heavily on [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync)'s
 great listener implementations for watching large hierarchies.
 
-
 Vagrant syncer forks [Vagrant's RsyncHelper](https://github.com/mitchellh/vagrant/blob/b721eb62cfbfa93895d0d4cf019436ab6b1df05d/plugins/synced_folders/rsync/helper.rb)
 to make it (c)leaner, instead of using the class like [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync) does.
 
@@ -24,7 +23,7 @@ All the [rsync synced folder settings](https://docs.vagrantup.com/v2/synced-fold
 They also have the same default values.
 
 See [Vagrantfile](https://github.com/asyrjasalo/vagrant-syncer/blob/master/example/Vagrantfile)
-for additional plugin specific ```config.syncer``` settings.
+for additional plugin specific ```config.syncer``` settings and their default values.
 
 
 ## Usage
@@ -56,16 +55,11 @@ Or outside the bundle:
     vagrant syncer
 
 
-## Thanks
+## Authors and thanks
 
-Hashicorp for [Vagrant](https://github.com/mitchellh/vagrant), even though
-its future will be overshadowed by [Otto](https://github.com/hashicorp/otto).
+Hashicorp for [Vagrant](https://github.com/mitchellh/vagrant), even though its
+future will likely be overshadowed by [Otto](https://github.com/hashicorp/otto).
 
-[vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync) for faster listener
-implementations for large file hierarchies.
-
-[Listen](https://github.com/guard/listen) for OS independent watcher API, and
-
-[rb-fsevent](https://github.com/thibaudgg/rb-fsevent) for FSEvents API access on OS/X, and
-
-[rb-inotify](https://github.com/nex3/rb-inotify) for inotify API access on GNU/Linux.
+[Steven Merrill's](https://github.com/smerrill) (@stevenmerrill) [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync)
+for [the listener implementations](https://github.com/smerrill/vagrant-gatling-rsync/tree/master/lib/vagrant-gatling-rsync/listen) to tap into [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) (OS X)
+and [rb-inotify](https://github.com/nex3/rb-inotify) (GNU/Linux) for non-resource hog watching of hierarchies with 10,000-100,000 files.
