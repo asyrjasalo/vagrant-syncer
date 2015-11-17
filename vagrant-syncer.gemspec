@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Vagrant::Syncer::VERSION
   spec.authors       = ["Anssi Syrjäsalo"]
   spec.email         = ["anssi.syrjasalo@gmail.com"]
-  spec.summary       = %q{Vagrant continuous file syncer plugin.}
-  spec.description   = %q{Uses filesystem events and rsync. Works on GNU/Linux, OS X and Windows.}
+  spec.summary       = %q{Optimized Vagrant rsync-auto}
+  spec.description   = %q{Vagrant plugin: Watchers for large hierarchies and leaner rsync.}
   spec.homepage      = "https://github.com/asyrjasalo/vagrant-syncer"
   spec.license       = "MIT"
 
