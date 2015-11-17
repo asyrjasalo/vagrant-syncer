@@ -65,5 +65,5 @@ Thanks to [Steven Merrill's](https://github.com/smerrill) (@stevenmerrill) [vagr
 for [the listener implementations](https://github.com/smerrill/vagrant-gatling-rsync/tree/master/lib/vagrant-gatling-rsync/listen) to tap into [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) (OS X)
 and [rb-inotify](https://github.com/nex3/rb-inotify) (GNU/Linux) for non-resource hog watching of hierarchies with 10,000-100,000 files.
 
-Respects to Hashicorp for [Vagrant](https://github.com/mitchellh/vagrant), even though its
+Praises to [Hashicorp](https://github.com/hashicorp) for [Vagrant](https://github.com/mitchellh/vagrant), even though its
 future will likely be overshadowed by [Otto](https://github.com/hashicorp/otto).
