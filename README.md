@@ -20,7 +20,7 @@ can be merged to Vagrant core and be submitted as pull requests to
 All the [rsync synced folder settings](https://docs.vagrantup.com/v2/synced-folders/rsync.html) are supported.
 They also have the same default values.
 
-See [Vagrantfile](https://github.com/asyrjasalo/vagrant-syncer/blob/master/example/Vagrantfile)
+See [the example Vagrantfile](https://github.com/asyrjasalo/vagrant-syncer/blob/master/example/Vagrantfile)
 for additional plugin specific ```config.syncer``` settings and their default values.
 
 
