@@ -40,7 +40,7 @@ See and try out [the example](https://github.com/asyrjasalo/vagrant-syncer/tree/
 
 ## Development
 
-Fork this repository and install Ruby 2.2.3, using e.g. [rbenv](https://github.com/sstephenson/rbenv):
+Fork this repository, clone it and install Ruby 2.2.3, using e.g. [rbenv](https://github.com/sstephenson/rbenv):
 
     cd vagrant-syncer
     rbenv install $(cat .ruby-version)
