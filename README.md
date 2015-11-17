@@ -34,7 +34,7 @@ for additional plugin specific ```config.syncer``` settings and their default va
 TODO: More about these
 
 - The plugin uses its own optimized rsync implementation, with most of the rsync command arguments constructing already done in the class initializer
-- Uses rb-fsevents and rb-inotify gems directly for performance, instead of Listen
+- Uses [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) and [rb-inotify](https://github.com/nex3/rb-inotify) gems directly for performance, instead of Listen
 - Allow defining additional SSH arguments to rsync in Vagrantfile using ```config.syncer.ssh_args```
 - Start watching changes after machine vagrant up/reload/resume, if ```config.syncer.run_on_startup``` true in Vagrantfile
 
@@ -58,11 +58,13 @@ Or outside the bundle:
     vagrant syncer
 
 
-## Authors and thanks
+## Credits
 
-Hashicorp for [Vagrant](https://github.com/mitchellh/vagrant), even though its
-future will likely be overshadowed by [Otto](https://github.com/hashicorp/otto).
+[vagrant-syncer](https://github.com/asyrjasalo/vagrant-syncer) is written by Anssi Syrjäsalo (@asyrjasalo).
 
-[Steven Merrill's](https://github.com/smerrill) (@stevenmerrill) [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync)
+Thanks to [Steven Merrill's](https://github.com/smerrill) (@stevenmerrill) [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync)
 for [the listener implementations](https://github.com/smerrill/vagrant-gatling-rsync/tree/master/lib/vagrant-gatling-rsync/listen) to tap into [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) (OS X)
 and [rb-inotify](https://github.com/nex3/rb-inotify) (GNU/Linux) for non-resource hog watching of hierarchies with 10,000-100,000 files.
+
+Respects to Hashicorp for [Vagrant](https://github.com/mitchellh/vagrant), even though its
+future will likely be overshadowed by [Otto](https://github.com/hashicorp/otto).
