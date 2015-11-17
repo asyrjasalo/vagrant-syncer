@@ -56,6 +56,7 @@ Or outside the bundle:
     ./build_and_install.sh
     vagrant syncer
 
+I'll kindly take pull requests as well!
 
 ## Credits
 
