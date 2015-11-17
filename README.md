@@ -30,7 +30,7 @@ for additional plugin specific ```config.syncer``` settings and their default va
 
 See and try out [the example](https://github.com/asyrjasalo/vagrant-syncer/tree/master/example).
 
-## Detailed list of improvements over rsync(-auto)
+## Improvements over rsync(-auto)
 
 - The plugin uses its own optimized rsync implementation, with most of the rsync command argument constructing already handled in the class initializer
 - Uses [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) and [rb-inotify](https://github.com/nex3/rb-inotify) gems underneath for performance, instead of generic Listen
