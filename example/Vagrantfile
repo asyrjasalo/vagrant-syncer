@@ -32,20 +32,20 @@ Vagrant.configure(2) do |config|
 
 
   ### Vagrant syncer specific options ###
-
   if Vagrant.has_plugin?("vagrant-syncer")
-    # All the settings are introduced in this file their with default values.
+    # All the plugin settings are introduced here with their default values
+    # The defaults are used if the plugin is installed and the settings are not explicitly overridden here
 
-    # How often (in seconds) to read the changes (supported by all the OSes)
+    # How often (in seconds) to read the change events from the listeners
     config.syncer.interval = 0.2
 
-    # Start watching changes after the machine up, reloaded or suspended
+    # Whether or not to start watching changes after the machine is up, reloaded or resumed
     config.syncer.run_on_startup = false
 
-    # Vagrant outputs the file system events from the Listener
+    # Whether or not the plugin outputs the file system events from the Listener
     config.syncer.show_events = false
 
-    # Optional SSH arguments to rsync
+    # Optional SSH arguments passed to rsync.
     config.syncer.ssh_args = [
       '-o StrictHostKeyChecking=no',
       '-o IdentitiesOnly=true',
