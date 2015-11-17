@@ -28,6 +28,7 @@ for additional plugin specific ```config.syncer``` settings and their default va
 
     vagrant syncer
 
+See [Vagrantfile](https://github.com/asyrjasalo/vagrant-syncer/tree/master/example) for an example setup. 
 
 ## Detailed list of improvements over rsync(-auto)
 
