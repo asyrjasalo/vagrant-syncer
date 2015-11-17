@@ -31,7 +31,12 @@ for additional plugin specific ```config.syncer``` settings and their default va
 
 ## Detailed list of improvements over rsync(-auto)
 
-To be written.
+TODO: More about these
+
+- The plugin uses its own optimized rsync implementation, with most of the rsync command arguments constructing already done in the class initializer
+- Uses rb-fsevents and rb-inotify gems directly for performance, instead of Listen
+- Allow defining additional SSH arguments to rsync in Vagrantfile using ```config.syncer.ssh_args```
+- Start watching changes after machine vagrant up/reload/resume, if ```config.syncer.run_on_startup``` true in Vagrantfile
 
 
 ## Development
