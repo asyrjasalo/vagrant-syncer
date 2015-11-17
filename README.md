@@ -33,9 +33,9 @@ See and try out [the example](https://github.com/asyrjasalo/vagrant-syncer/tree/
 ## Improvements over rsync(-auto)
 
 - The plugin uses its own optimized rsync implementation, with most of the rsync command argument constructing already handled in the class initializer
-- Uses [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) and [rb-inotify](https://github.com/nex3/rb-inotify) gems underneath for performance, instead of generic Listen
+- Uses [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) and [rb-inotify](https://github.com/nex3/rb-inotify) gems underneath for performance on OS X and GNU/Linux, instead of using the OS independent Listen. On other operating systems (for now), it falls back to Listen though.
 - Allow defining additional SSH arguments to rsync in Vagrantfile using ```config.syncer.ssh_args```
-- Start watching changes after machine vagrant up/reload/resume, if ```config.syncer.run_on_startup``` set to true in Vagrantfile
+- Start watching changes after machine vagrant up/reload/resume, if ```config.syncer.run_on_startup``` set to ```true``` in Vagrantfile
 
 
 ## Development
