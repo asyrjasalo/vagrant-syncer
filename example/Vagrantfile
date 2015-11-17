@@ -5,6 +5,8 @@ Vagrant.configure(2) do |config|
   config.vm.box = 'ubuntu/trusty64'
   config.vm.box_check_update = false
 
+  config.vm.network 'private_network', ip: '10.10.10.10'
+
   config.vm.synced_folder '.', '/vagrant', disabled: true
 
   config.vm.synced_folder "files", "/home/vagrant/files", type: 'rsync',
@@ -22,16 +24,25 @@ Vagrant.configure(2) do |config|
     ],
     rsync__verbose: true
 
+  config.ssh.username = 'vagrant'
+  config.ssh.forward_agent = true
+
+
+  ### Vagrant syncer specific options ###
+
+  # How often (in seconds) to read the changes (supported by all the OSes)
   config.syncer.interval = 0.2
+
+  # Start watching changes after the machine up, reloaded or suspended
   config.syncer.run_on_startup = true
+
+  # Vagrant outputs the file system events from the Listener
   config.syncer.show_events = true
+
+  # Optional SSH arguments to rsync ('-e ssh')
   config.syncer.ssh_args = [
     "-o StrictHostKeyChecking=no",
     "-o UserKnownHostsFile=/dev/null"
   ]
 
-  config.ssh.username = 'vagrant'
-  config.ssh.forward_agent = true
-
-  config.vm.network 'private_network', ip: '10.10.10.10'
 end
