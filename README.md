@@ -59,7 +59,7 @@ Or outside the bundle:
 
 ## Credits
 
-[vagrant-syncer](https://github.com/asyrjasalo/vagrant-syncer) is written by Anssi Syrjäsalo (@asyrjasalo).
+[vagrant-syncer](https://github.com/asyrjasalo/vagrant-syncer) is originally written by Anssi Syrjäsalo (@asyrjasalo).
 
 Thanks to [Steven Merrill's](https://github.com/smerrill) (@stevenmerrill) [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync)
 for [the listener implementations](https://github.com/smerrill/vagrant-gatling-rsync/tree/master/lib/vagrant-gatling-rsync/listen) to tap into [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) (OS X)
