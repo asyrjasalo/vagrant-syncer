@@ -40,8 +40,9 @@ See and try out [the example](https://github.com/asyrjasalo/vagrant-syncer/tree/
 
 ## Development
 
-Clone this repository and install Ruby 2.2.3, using e.g. [rbenv](https://github.com/sstephenson/rbenv).
+Clone this repository and install Ruby 2.2.3, using e.g. [rbenv](https://github.com/sstephenson/rbenv):
 
+    git clone git@github.com:asyrjasalo/vagrant-syncer.git
     cd vagrant-syncer
     rbenv install $(cat .ruby-version)
     gem install bundler -v1.10.5
