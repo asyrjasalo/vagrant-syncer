@@ -68,4 +68,4 @@ implementations for large file hierarchies.
 
 [rb-inotify](https://github.com/nex3/rb-inotify) for inotify API access on GNU/Linux.
 
-[Listen gem](https://github.com/guard/listen) for multi-OS watcher implementation.
+[Listen](https://github.com/guard/listen) for OS independent watcher API.
