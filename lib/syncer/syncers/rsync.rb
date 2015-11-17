@@ -111,13 +111,7 @@ module Vagrant
           excludes.uniq.map { |e| ["--exclude", e] }
         end
 
-        def parse_ssh_command(ssh_args=nil)
-          ssh_args ||= [
-            '-o StrictHostKeyChecking=no',
-            '-o IdentitiesOnly=true',
-            '-o UserKnownHostsFile=/dev/null'
-          ]
-
+        def parse_ssh_command(ssh_args)
           proxy_command = ""
           if @machine.ssh_info[:proxy_command]
             proxy_command = "-o ProxyCommand='#{@machine.ssh_info[:proxy_command]}' "
