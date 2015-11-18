@@ -33,7 +33,7 @@ See and try out [the example](https://github.com/asyrjasalo/vagrant-syncer/tree/
 ## Improvements over rsync(-auto)
 
 - The plugin uses its own optimized rsync implementation, with most of the rsync command argument constructing already handled in the class initializer and not sync-time
-- Uses [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) and [rb-inotify](https://github.com/nex3/rb-inotify) gems underneath for performance on OS X and GNU/Linux, respectively, instead of using OS independent Listen. On other operating systems, it falls back to Listen though for now.
+- Uses [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) and [rb-inotify](https://github.com/nex3/rb-inotify) gems underneath for performance on OS X and GNU/Linux, respectively, instead of using Listen. On Windows, Listen is used though as wdm needs some testing.
 - Allow defining additional SSH arguments to rsync in Vagrantfile using ```config.syncer.ssh_args```
 - Runs ```vagrant syncer``` to start watching changes after vagrant up, reload and resume, if ```config.syncer.run_on_startup``` set to ```true``` in Vagrantfile
 
@@ -56,15 +56,15 @@ Or outside the bundle:
     ./build_and_install.sh
     vagrant syncer
 
-I'll kindly take pull requests as well!
+I'll kindly take pull requests as well.
 
 ## Credits
 
-[vagrant-syncer](https://github.com/asyrjasalo/vagrant-syncer) is originally written by Anssi Syrjäsalo (@asyrjasalo).
+[vagrant-syncer](https://github.com/asyrjasalo/vagrant-syncer) was originally developed by Anssi Syrjäsalo.
 
 Thanks to [Steven Merrill's](https://github.com/smerrill) (@stevenmerrill) [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync)
 for [the listener implementations](https://github.com/smerrill/vagrant-gatling-rsync/tree/master/lib/vagrant-gatling-rsync/listen) and the original idea to tap into [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) (OS X)
 and [rb-inotify](https://github.com/nex3/rb-inotify) (GNU/Linux) for non-CPU hog watching of hierarchies with 10,000-100,000 files.
 
-Praises to [Hashicorp](https://github.com/hashicorp) for [Vagrant](https://github.com/mitchellh/vagrant), even though its
+And to [Hashicorp](https://github.com/hashicorp) for [Vagrant](https://github.com/mitchellh/vagrant), even though its
 future will likely be overshadowed by [Otto](https://github.com/hashicorp/otto).
