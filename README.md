@@ -17,8 +17,8 @@ can be merged to Vagrant core and be submitted as pull requests to
 
 ## Configuration
 
-All the [rsync synced folder settings](https://docs.vagrantup.com/v2/synced-folders/rsync.html) are supported.
-They also have the same default values.
+All the [rsync synced folder settings](https://docs.vagrantup.com/v2/synced-folders/rsync.html)
+are supported. They also have the same default values.
 
 See [the example Vagrantfile](https://github.com/asyrjasalo/vagrant-syncer/blob/master/example/Vagrantfile)
 for additional plugin specific ```config.syncer``` settings and their default values.
@@ -28,14 +28,23 @@ for additional plugin specific ```config.syncer``` settings and their default va
 
     vagrant syncer
 
-See and try out [the example](https://github.com/asyrjasalo/vagrant-syncer/tree/master/example).
-
 ## Improvements over rsync(-auto)
 
-- The plugin uses its own optimized rsync implementation, with most of the rsync command argument constructing already handled in the class initializer and not sync-time
-- Uses [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) and [rb-inotify](https://github.com/nex3/rb-inotify) gems underneath for performance on OS X and GNU/Linux, respectively, instead of using Listen. On Windows, Listen is used though as wdm needs some testing.
-- Allow defining additional SSH arguments to rsync in Vagrantfile using ```config.syncer.ssh_args```
-- Runs ```vagrant syncer``` to start watching changes after vagrant up, reload and resume, if ```config.syncer.run_on_startup``` set to ```true``` in Vagrantfile
+- The plugin has leaner rsync implementation with most of the rsync command
+  argument constructing already handled in the class initializer and not sync-time
+- Uses [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) and
+  [rb-inotify](https://github.com/nex3/rb-inotify) gems underneath for
+  performance on OS X and GNU/Linux, respectively, instead of using Listen.
+  in Windows, Listen is used though as using wdm still needs some testing.
+- Allow defining additional SSH arguments to rsync in Vagrantfile using
+  ```config.syncer.ssh_args```. This can be used for e.g. disabling SSH
+  compression to lower CPU overhead.
+- Runs ```vagrant syncer``` to start watching changes after vagrant up, reload
+  and resume, if ```config.syncer.run_on_startup``` set to ```true```
+  in Vagrantfile
+- Vagrant's implementation assumes that the primary group of the SSH user
+  has the same name as the user, if rsync option 'group' is not explicitly
+  defined. This plugin queries the user's real primary group from the guest.
 
 
 ## Development
