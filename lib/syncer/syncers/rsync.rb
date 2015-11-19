@@ -146,7 +146,7 @@ module Vagrant
             rsync_args << "--no-group"
           end
 
-          # Invoke remote rsync with sudo to allow changing owner/group
+          # Invoke remote rsync with sudo to allow owner and group settings to work
           if !rsync_path && @machine.guest.capability?(:rsync_command)
             rsync_path = @machine.guest.capability(:rsync_command)
           end
