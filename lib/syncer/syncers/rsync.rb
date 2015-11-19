@@ -38,11 +38,6 @@ module Vagrant
               @vagrant_rsync_opts[:group] = output.chomp  if type == :stdout
             end
           end
-
-          # Create the target directory on the guest if it does not exist
-          if @machine.guest.capability?(:rsync_pre)
-            @machine.guest.capability(:rsync_pre, @vagrant_rsync_opts)
-          end
         end
 
         def sync(changed_paths=nil)
