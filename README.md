@@ -45,8 +45,8 @@ for additional plugin specific ```config.syncer``` settings and their default va
 - Vagrant's implementation assumes that the primary group of the SSH user
   has the same name as the user, if rsync option ```group``` is not explicitly
   defined. This plugin queries the user's real primary group from the guest.
-- Calling Vagrant's ```:rsync_pre``` hook is removed, as this unnecessarily(?)
-  creates the target directory on the guest which rsyncs handles sync-time anyway.
+- Hooking Vagrant's ```:rsync_pre``` is removed, as this unnecessarily runs mkdir
+  to create the target directory, which rsync command creates sync-time anyway.
 
 
 ## Development
