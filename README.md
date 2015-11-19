@@ -43,7 +43,7 @@ for additional plugin specific ```config.syncer``` settings and their default va
   and resume, if ```config.syncer.run_on_startup``` set to ```true```
   in Vagrantfile
 - Vagrant's implementation assumes that the primary group of the SSH user
-  has the same name as the user, if rsync option 'group' is not explicitly
+  has the same name as the user, if rsync option ```group``` is not explicitly
   defined. This plugin queries the user's real primary group from the guest.
 - Calling Vagrant's ```:rsync_pre``` hook is removed, as this unnecessarily(?)
   creates the target directory on the guest which rsyncs handles sync-time anyway.
