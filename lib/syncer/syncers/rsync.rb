@@ -93,9 +93,7 @@ module Vagrant
           end
 
           # Ensure path ends with '/' to prevent creating directory inside directory
-          if !abs_host_path.end_with?("/")
-            abs_host_path += "/"
-          end
+          abs_host_path += "/"  if !abs_host_path.end_with?("/")
 
           abs_host_path
         end
@@ -126,9 +124,7 @@ module Vagrant
           # This is the default rsync output unless overridden by user
           rsync_args.unshift("--out-format=%L%n")
 
-          rsync_chmod_args_given = rsync_args.any? do |arg|
-            arg.start_with?("--chmod=")
-          end
+          rsync_chmod_args_given = rsync_args.any? { |arg| arg.start_with?("--chmod=") }
 
           # On Windows, enable all non-masked bits to avoid permission issues
           if Vagrant::Util::Platform.windows? && !rsync_chmod_args_given
