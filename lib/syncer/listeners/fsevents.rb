@@ -7,7 +7,7 @@ module Vagrant
 
         def initialize(absolute_path, excludes, settings, callback)
           @absolute_path = absolute_path
-          @settings = settings
+          @settings = settings.merge!(no_defer: false)
           @callback = callback
           # rb-fsevent does not support excludes
         end
