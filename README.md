@@ -71,7 +71,7 @@ I'll kindly take pull requests as well.
 
 ## Credits
 
-[vagrant-syncer](https://github.com/asyrjasalo/vagrant-syncer) was originally developed by Anssi Syrjäsalo.
+[vagrant-syncer](https://github.com/asyrjasalo/vagrant-syncer) was originally put together by Anssi Syrjäsalo.
 
 Thanks to [Steven Merrill's](https://github.com/smerrill) (@stevenmerrill) [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync)
 for [the listener implementations](https://github.com/smerrill/vagrant-gatling-rsync/tree/master/lib/vagrant-gatling-rsync/listen) and the original idea to tap into [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) (OS X)
