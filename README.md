@@ -34,8 +34,8 @@ for additional plugin specific ```config.syncer``` settings and their default va
   argument constructing already handled in the class initializer and not sync-time
 - Uses [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) and
   [rb-inotify](https://github.com/nex3/rb-inotify) gems underneath for
-  performance on OS X and GNU/Linux, respectively, instead of using Listen.
-  in Windows, Listen is used though as using wdm still needs some testing.
+  performance on OS X and GNU/Linux respectively, instead of using Listen.
+  On Windows, Listen is used though as using wdm still needs some testing.
 - Allow defining additional SSH arguments to rsync in Vagrantfile using
   ```config.syncer.ssh_args```. This can be used for e.g. disabling SSH
   compression to lower CPU overhead.
