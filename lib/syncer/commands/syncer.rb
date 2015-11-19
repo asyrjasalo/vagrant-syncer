@@ -10,7 +10,7 @@ module Vagrant
         def execute
           with_target_vms do |machine|
             machine = Machine.new(machine)
-            machine.full_sync
+            # machine.full_sync
             machine.listen
           end
           0
