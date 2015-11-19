@@ -1,7 +1,7 @@
 en:
   syncer:
     states:
-      initial: "Doing a full sync for %{path} to get the machine up to date."
+      initial: "Syncing %{path} to get the target up to date."
       watching: "Watching %{path} for changes (via %{listener}) every %{interval} seconds."
     rsync:
       failed: "Rsync failed: %{error}"
