@@ -16,38 +16,42 @@ Vagrant.configure(2) do |config|
     rsync__args: [
       "--archive",
       "--delete",
-      "--force"
+      "--force",
+      "--numeric-ids"
     ],
     rsync__exclude: [
       "/excluded_file.txt",
       "/excluded_directory",
       "excluded_nested_file.txt",
       "excluded_nested_directory",
-      "*.not"
+      "*.not",
+      ".git"
     ],
+    rsync__rsync_path: 'rsync',
     rsync__verbose: true
 
   config.ssh.username = 'vagrant'
   config.ssh.forward_agent = true
 
 
-  ### Vagrant syncer specific options ###
-  # All the plugin settings are introduced here with their default values
-  # The defaults are used if the plugin is installed and the settings are not explicitly overridden here
+  # Vagrant rsyncer settings are introduced below with their default values.
 
-  # How often (in seconds) to read the change events from the listeners
+  # How often (in seconds) to read file system events
   config.syncer.interval = 0.2
 
-  # Whether or not to start watching changes after the machine is up, reloaded or resumed
+  # Whether or not to start watching after the machine is up, reloaded or resumed
   config.syncer.run_on_startup = false
 
-  # Whether or not the plugin outputs the file system events from the Listener
+  # Whether or not to show the file system events
   config.syncer.show_events = false
 
-  # Optional SSH arguments passed to rsync.
+  # Optional SSH arguments passed to rsync for lower CPU load
   config.syncer.ssh_args = [
     '-o StrictHostKeyChecking=no',
     '-o IdentitiesOnly=true',
-    '-o UserKnownHostsFile=/dev/null'
+    '-o UserKnownHostsFile=/dev/null',
+    '-c arcfour,blowfish-cbc',
+    '-o Compression=no',
+    '-x'
   ]
 end
