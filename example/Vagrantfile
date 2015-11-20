@@ -27,7 +27,6 @@ Vagrant.configure(2) do |config|
       "*.not",
       ".git"
     ],
-    rsync__rsync_path: 'rsync',
     rsync__verbose: true
 
   config.ssh.username = 'vagrant'
