@@ -119,7 +119,8 @@ module Vagrant
         end
 
         def parse_rsync_args(rsync_args=nil, rsync_path=nil)
-          rsync_args ||= ["--archive", "--delete", "--compress", "--copy-links", "--verbose"]
+          rsync_args ||= ["--archive", "--delete", "--compress", "--copy-links",
+            "--verbose"]
 
           # This is the default rsync output unless overridden by user
           rsync_args.unshift("--out-format=%L%n")
