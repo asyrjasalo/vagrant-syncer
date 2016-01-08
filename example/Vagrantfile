@@ -55,6 +55,9 @@ Vagrant.configure(2) do |config|
     '-o UserKnownHostsFile=/dev/null',
     '-c arcfour,blowfish-cbc',
     '-o Compression=no',
+    '-o ControlMaster=auto',
+    "-o ControlPath=#{File.join(Dir.tmpdir, "ssh.#{rand(1000)}")}",
+    '-o ControlPersist=10m',
     '-x'
   ]
 end
