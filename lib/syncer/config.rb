@@ -18,7 +18,10 @@ module Vagrant
         @ssh_args = [
           '-o StrictHostKeyChecking=no',
           '-o IdentitiesOnly=true',
-          '-o UserKnownHostsFile=/dev/null'
+          '-o UserKnownHostsFile=/dev/null',
+          '-o ControlMaster=auto',
+          "-o ControlPath=#{File.join(Dir.tmpdir, "ssh.#{rand(1000)}")}",
+          '-o ControlPersist=10m'
         ] if @ssh_args == UNSET_VALUE
       end
 
