@@ -13,9 +13,19 @@ module Vagrant
         Vagrant::Syncer::Config
       end
 
-      command "syncer" do
-        require 'syncer/commands/syncer'
-        Vagrant::Syncer::Commands::Syncer
+      command("rsync", primary: false) do
+        require_relative "command/rsync"
+        Vagrant::Syncer::Command::Rsync
+      end
+
+      command("rsync-auto", primary: false) do
+        require_relative "command/rsync_auto"
+        Vagrant::Syncer::Command::RsyncAuto
+      end
+
+      synced_folder("rsync", 5) do
+        require_relative "synced_folder"
+        SyncedFolder
       end
 
       ["machine_action_up", "machine_action_reload", "machine_action_resume"].each do |action|

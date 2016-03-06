@@ -6,14 +6,19 @@ module Vagrant
 
       include Vagrant::Action::Builtin::MixinSyncedFolders
 
-      def initialize(machine)
+      def initialize(machine, polling=false)
         @paths = []
 
-        synced_folders = synced_folders(machine)[:rsync]
-        return  unless synced_folders
+        cached = synced_folders(machine, cached: true)
+        fresh  = synced_folders(machine)
+        diff   = synced_folders_diff(cached, fresh)
+        if !diff[:added].empty?
+          machine.ui.warn(I18n.t("vagrant.rsync_auto_new_folders"))
+        end
 
-        synced_folders.each do |id, folder_opts|
-          @paths << Path.new(folder_opts, machine)
+        folders = cached[:rsync]
+        folders.each do |id, folder_opts|
+          @paths << Path.new(folder_opts, machine, polling)
         end
       end
 
