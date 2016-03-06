@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Anssi Syrjäsalo"]
   spec.email         = ["anssi.syrjasalo@gmail.com"]
   spec.summary       = %q{Optimized Vagrant rsync-auto}
-  spec.description   = %q{A Vagrant synced folder plugin with watchers for large file hierarchies and (c)leaner rsync-auto.}
+  spec.description   = %q{Optimized Vagrant rsync(-auto) plugin for large file hierarchies.}
   spec.homepage      = "https://github.com/asyrjasalo/vagrant-syncer"
   spec.license       = "MIT"
 
