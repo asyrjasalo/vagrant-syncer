@@ -17,6 +17,8 @@ module Vagrant
         end
 
         folders = cached[:rsync]
+        return unless folders
+
         folders.each do |id, folder_opts|
           @paths << Path.new(folder_opts, machine, polling)
         end
