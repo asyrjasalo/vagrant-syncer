@@ -87,9 +87,9 @@ module Vagrant
           abs_host_path = File.expand_path(host_dir, @machine_path)
           abs_host_path = Vagrant::Util::Platform.fs_real_path(abs_host_path).to_s
 
-          # Rsync on Windows expects Cygwin style paths
+          # Rsync on Windows expects relative paths
           if Vagrant::Util::Platform.windows?
-            abs_host_path = Vagrant::Util::Platform.cygwin_path(abs_host_path)
+            abs_host_path = abs_host_path.gsub(@machine_path + '/', '')
           end
 
           # Ensure path ends with '/' to prevent creating directory inside directory
