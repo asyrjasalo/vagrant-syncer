@@ -40,8 +40,8 @@ module Vagrant
           end
         end
 
-        def sync(changed_paths=nil)
-          changed_paths ||= [@host_path]
+        def sync(changed_paths=[])
+          changed_paths << @host_path  if changed_paths.empty?
 
           rsync_command = [
             "rsync",
