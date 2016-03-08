@@ -50,7 +50,7 @@ module Vagrant
 
       def initial_sync
         @logger.info(I18n.t('syncer.states.initial', path: @absolute_path))
-        @syncer.sync
+        @syncer.sync([@source_path])
       end
 
       def listen
