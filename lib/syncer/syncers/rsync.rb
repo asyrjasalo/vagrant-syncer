@@ -12,7 +12,8 @@ module Vagrant
 
           @machine_path = machine.env.root_path.to_s
           @host_path = parse_host_path(path_opts[:hostpath])
-          @rsync_args = parse_rsync_args(path_opts[:rsync__args], path_opts[:rsync__rsync_path])
+          @rsync_args = parse_rsync_args(path_opts[:rsync__args],
+            path_opts[:rsync__rsync_path])
           @rsync_verbose = path_opts[:rsync__verbose] || false
           @ssh_command = parse_ssh_command(machine.config.syncer.ssh_args)
           @exclude_args = parse_exclude_args(path_opts[:rsync__exclude])
@@ -73,7 +74,7 @@ module Vagrant
             return
           end
 
-          # Set owner/group after the files are transferred
+          # Set owner and group after the files are transferred.
           if @machine.guest.capability?(:rsync_post)
             @machine.guest.capability(:rsync_post, @vagrant_rsync_opts)
           end
@@ -85,12 +86,13 @@ module Vagrant
           abs_host_path = File.expand_path(host_dir, @machine_path)
           abs_host_path = Vagrant::Util::Platform.fs_real_path(abs_host_path).to_s
 
-          # Rsync on Windows expects relative paths
+          # Rsync on Windows to use relative paths and not to expect Cygwin.
           if Vagrant::Util::Platform.windows?
             abs_host_path = abs_host_path.gsub(@machine_path + '/', '')
           end
 
-          # Ensure path ends with '/' to prevent creating directory inside directory
+          # Ensure the path ends with '/' to prevent creating a directory
+          # inside a directory.
           abs_host_path += "/"  if !abs_host_path.end_with?("/")
 
           abs_host_path
@@ -98,7 +100,7 @@ module Vagrant
 
         def parse_exclude_args(excludes=nil)
           excludes ||= []
-          excludes << '.vagrant/'  # in any case, exclude .vagrant directory
+          excludes << '.vagrant/'  # Always exclude .vagrant directory.
           excludes.uniq.map { |e| ["--exclude", e] }
         end
 
@@ -120,24 +122,28 @@ module Vagrant
           rsync_args ||= ["--archive", "--delete", "--compress", "--copy-links",
             "--verbose"]
 
-          # This is the default rsync output unless overridden by user
+          # The default rsync output, later user opt --out-format arguments
+          # take presence.
           rsync_args.unshift("--out-format=%L%n")
 
-          rsync_chmod_args_given = rsync_args.any? { |arg| arg.start_with?("--chmod=") }
+          rsync_chmod_args_given = rsync_args.any? { |arg|
+            arg.start_with?("--chmod=")
+          }
 
-          # On Windows, enable all non-masked bits to avoid permission issues
+          # On Windows, enable all non-masked bits to avoid permission issues.
           if Vagrant::Util::Platform.windows? && !rsync_chmod_args_given
             rsync_args << "--chmod=ugo=rwX"
 
-            # Remove the -p option if --archive (equals -rlptgoD) is given
-            # Otherwise new files won't get the destination-default permissions
+            # Remove the -p option if --archive (equals -rlptgoD) is given.
+            # Otherwise new files won't get the destination's default
+            # permissions.
             if rsync_args.include?("--archive") || rsync_args.include?("-a")
               rsync_args << "--no-perms"
             end
           end
 
-          # Disable rsync's owner/group preservation (implied by --archive) unless
-          # explicitly requested, since we adjust owner/group later ourselves
+          # Disable rsync's owner and group preservation (implied by --archive)
+          # unless explicitly wanted, since we set owner/group using sudo rsync.
           unless rsync_args.include?("--owner") || rsync_args.include?("-o")
             rsync_args << "--no-owner"
           end
@@ -145,7 +151,7 @@ module Vagrant
             rsync_args << "--no-group"
           end
 
-          # Invoke remote rsync with sudo to allow owner and group settings to work
+          # Invoke remote rsync with sudo to allow chowning.
           if !rsync_path && @machine.guest.capability?(:rsync_command)
             rsync_path = @machine.guest.capability(:rsync_command)
           end

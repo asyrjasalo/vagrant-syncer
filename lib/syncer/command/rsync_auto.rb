@@ -5,7 +5,7 @@ require "vagrant/action/builtin/mixin_synced_folders"
 require "vagrant/util/platform"
 
 
-# This is to avoid a bug in nio 1.0.0. Remove around nio 1.0.1
+# This is to avoid a bug in nio 1.0.0. Remove around nio 1.0.1.
 ENV["NIO4R_PURE"] = "1"  if Vagrant::Util::Platform.windows?
 
 module Vagrant
@@ -45,8 +45,8 @@ module Vagrant
                 machine.ui.warn(I18n.t(
                   "vagrant.rsync_proxy_machine",
                   name: machine.name.to_s,
-                  provider: machine.provider_name.to_s))
-
+                  provider: machine.provider_name.to_s
+                ))
                 machine = proxy
               end
             end

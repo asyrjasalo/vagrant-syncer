@@ -23,6 +23,7 @@ module Vagrant
         Vagrant::Syncer::Command::RsyncAuto
       end
 
+      # For backwards compatibility with earlier vagrant-syncer versions.
       command("syncer", primary: false) do
         require_relative "command/rsync_auto"
         Vagrant::Syncer::Command::RsyncAuto

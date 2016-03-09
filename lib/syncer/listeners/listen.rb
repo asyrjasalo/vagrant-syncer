@@ -46,7 +46,7 @@ module Vagrant
             Thread.new { queue << true }
           end
 
-          # Run the listener in a busy block, exit once we receive an interrupt
+          # Run the listener in a busy block, exit once we receive an interrupt.
           Vagrant::Util::Busy.busy(callback) do
             listener.start
             queue.pop

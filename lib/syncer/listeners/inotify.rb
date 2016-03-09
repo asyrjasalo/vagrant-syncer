@@ -9,7 +9,7 @@ module Vagrant
           @absolute_path = absolute_path
           @settings = settings
           @callback = callback
-          # rb-inotify does not support excludes
+          # rb-inotify does not support excludes.
         end
 
         def run

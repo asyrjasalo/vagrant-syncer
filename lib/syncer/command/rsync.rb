@@ -29,7 +29,7 @@ module Vagrant
           argv = parse_options(opts)
           return if !argv
 
-          # Go through each machine and perform the rsync
+          # Go through each machine and perform full sync.
           error = false
           with_target_vms(argv) do |machine|
             if machine.provider.capability?(:proxy_machine)
