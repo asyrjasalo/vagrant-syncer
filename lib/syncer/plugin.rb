@@ -23,6 +23,11 @@ module Vagrant
         Vagrant::Syncer::Command::RsyncAuto
       end
 
+      command("syncer", primary: false) do
+        require_relative "command/rsync_auto"
+        Vagrant::Syncer::Command::RsyncAuto
+      end
+
       synced_folder("rsync", 5) do
         require_relative "synced_folder"
         SyncedFolder
