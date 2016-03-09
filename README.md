@@ -1,13 +1,13 @@
 # vagrant syncer
 
-A Vagrant synced folder plugin that is an optimized implementation of [Vagrant rsync(-auto)](https://github.com/mitchellh/vagrant/tree/b721eb62cfbfa93895d0d4cf019436ab6b1df05d/plugins/synced_folders/rsync), based heavily on [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync)'s great listener implementations for watching large hierarchies.
+  This Vagrant plugin optimizes to the following Vagrant commands to not
+  be that CPU hog with large file hierachies:
 
-Vagrant syncer forks [Vagrant's RsyncHelper](https://github.com/mitchellh/vagrant/blob/b721eb62cfbfa93895d0d4cf019436ab6b1df05d/plugins/synced_folders/rsync/helper.rb)
-to make it (c)leaner, instead of using the class like [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync) does.
+    vagrant rsync
+    vagrant rsync-auto
 
-If the optimizations seem to work in heavy use, I'll see if (some of) them can
-be merged to Vagrant core and be submitted as pull requests to
-[the official Vagrant repo](https://github.com/mitchellh/vagrant).
+  All the [rsync synced folder settings](https://docs.vagrantup.com/v2/synced-folders/rsync.html)
+  are supported. They also have the same default values for backwards compatibility.
 
 
 ## Installation
@@ -15,43 +15,43 @@ be merged to Vagrant core and be submitted as pull requests to
     vagrant plugin install vagrant-syncer
 
 
-## Configuration
+## Updating
 
-All the [rsync synced folder settings](https://docs.vagrantup.com/v2/synced-folders/rsync.html)
-are supported. They also have the same default values.
+    vagrant plugin update vagrant-syncer
+
+
+## Configuration
 
 See [the example Vagrantfile](https://github.com/asyrjasalo/vagrant-syncer/blob/master/example/Vagrantfile)
 for additional plugin specific ```config.syncer``` settings and their default
 values.
 
 
-## Usage
-
-  The plugin replaces the following stock commands:
-
-    vagrant rsync
-    vagrant rsync-auto
-
-## Improvements over the stock commands
+## Changes to the Vagrant's rsync and rsync-auto
 
 - The plugin has leaner rsync implementation with most of the rsync command
   argument constructing already handled in the class initializer and not
-  sync-time
+  sync-time (in the sync loop).
 - Uses [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) and
   [rb-inotify](https://github.com/nex3/rb-inotify) gems underneath for
   performance on OS X and GNU/Linux respectively, instead of using Listen.
-  On Windows, Listen is used though as using wdm still needs some testing.
+  On Windows, Listen is used though as using plain wdm gem requires some tests.
 - Allow defining additional SSH arguments to rsync in Vagrantfile using
-  ```config.syncer.ssh_args```. This can be used for e.g. disabling SSH
-  compression to lower CPU overhead.
+  ```config.syncer.ssh_args```. Use this for e.g. disabling SSH compression to
+  lower CPU overhead.
 - Runs ```vagrant rsync-auto``` to start watching changes after vagrant up,
   reload and resume, if ```config.syncer.run_on_startup``` set to ```true```
-  in Vagrantfile
+  in Vagrantfile.
 - Vagrant's implementation assumes that the primary group of the SSH user
   has the same name as the user, if rsync option ```group``` is not explicitly
   defined. This plugin queries the user's real primary group from the guest.
 - Hooking Vagrant's ```:rsync_pre``` is removed, as this unnecessarily runs mkdir
   to create the target directory, which rsync command creates sync-time anyway.
+- On Windows, expect relative paths, instead of Cygwin style, as Cygwin shall
+  not be a requirement.
+- ControlPath settings are not in the default SSH arguments on Windows,
+  as they fail on [Vagrant 1.8.0 and 1.8.1](https://github.com/mitchellh/vagrant/issues/7046).
+- The rsync stdout outputs are all single line by default, and colored.
 
 
 ## Development
@@ -72,7 +72,7 @@ Or outside the bundle:
     ./build_and_install.sh
     vagrant rsync-auto
 
-I'll kindly take pull requests as well.
+Also, I kindly take pull requests.
 
 ## Credits
 
