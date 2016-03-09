@@ -23,6 +23,8 @@ module Vagrant
             '-o UserKnownHostsFile=/dev/null',
           ]
 
+          # ControlPaths seem to fail on Windows with Vagrant >= 1.8.0.
+          # See: https://github.com/mitchellh/vagrant/issues/7046
           unless Vagrant::Util::Platform.windows?
             @ssh_args += [
               '-o ControlMaster=auto',
