@@ -15,6 +15,7 @@ module Vagrant
         @listener_polling = listener_polling
         @listener_verbose = machine.config.syncer.show_events
         @listener_interval = machine.config.syncer.interval
+        @force_listen_gem = machine.config.syncer.force_listen_gem
 
         listener_settings = {
           latency: @listener_interval
@@ -24,6 +25,9 @@ module Vagrant
           require_relative 'listeners/listen'
           @listener_class = Vagrant::Syncer::Listeners::Listen
           listener_settings[:force_polling] = @listener_polling
+        elsif @force_listen_gem
+          require_relative 'listeners/listen'
+          @listener_class = Vagrant::Syncer::Listeners::Listen
         else
           case Vagrant::Util::Platform.platform
           when /darwin/

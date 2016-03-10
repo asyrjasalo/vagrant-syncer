@@ -48,7 +48,11 @@ Vagrant.configure(2) do |config|
   # Default: false
   config.syncer.show_events = false
 
-  # Optional SSH arguments passed to rsync, e.g. to lower CPU load
+  # Whether or not to force using Listen gem, on OS X and Linux distros as well.
+  # Default: false
+  config.syncer.force_listen_gem = false
+
+  # Optional SSH arguments passed to rsync, e.g. to cut down CPU load.
   #
   # If config.syncer.ssh_args are not given, the defaults on all platforms are:
   #  -o StrictHostKeyChecking=no
