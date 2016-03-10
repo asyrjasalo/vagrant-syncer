@@ -41,17 +41,8 @@ module Vagrant
             @callback.call(mod + add + rem)
           end
 
-          queue = Queue.new
-          callback = lambda do
-            Thread.new { queue << true }
-          end
-
-          # Run the listener in a busy block, exit once we receive an interrupt.
-          Vagrant::Util::Busy.busy(callback) do
-            listener.start
-            queue.pop
-            listener.stop  if listener.state != :stopped
-          end
+          listener.start
+          sleep
         end
 
       end
