@@ -36,6 +36,7 @@ module Vagrant
           when /linux/
             require_relative 'listeners/inotify'
             @listener_class = Vagrant::Syncer::Listeners::INotify
+            listener_settings[:wait_for_delay] = @listener_interval / 2
           else
             require_relative 'listeners/listen'
             @listener_class = Vagrant::Syncer::Listeners::Listen
