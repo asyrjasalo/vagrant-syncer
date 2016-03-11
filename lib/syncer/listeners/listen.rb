@@ -33,7 +33,6 @@ module Vagrant
               @settings[:ignore!] << self.class.excludes_to_listen(pattern.to_s)
             end
           end
-
         end
 
         def run
@@ -44,7 +43,6 @@ module Vagrant
           listener.start
           sleep
         end
-
       end
     end
   end
