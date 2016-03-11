@@ -22,14 +22,8 @@ module Vagrant
 
           loop do
             directories = Set.new
-            begin
-              loop do
-                change = Timeout::timeout(@settings[:latency]) { changes.pop }
-                directories << change  unless change.nil?
-              end
-            rescue Timeout::Error, ThreadError
-            end
-
+            change = changes.pop
+            directories << change  unless change.nil?
             @callback.call(directories.to_a)  unless directories.empty?
           end
         end
