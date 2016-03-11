@@ -18,7 +18,7 @@ module Vagrant
       end
 
       def finalize!
-        @interval = 0.2          if @interval == UNSET_VALUE || @interval <= 0.2
+        @interval = 0.1          if @interval == UNSET_VALUE || @interval < 0.01
         @run_on_startup = true   if @run_on_startup == UNSET_VALUE
         @show_events = false     if @show_events == UNSET_VALUE
         @force_listen_gem = false  if @force_listen_gem == UNSET_VALUE

@@ -36,8 +36,8 @@ Vagrant.configure(2) do |config|
   ### Vagrant syncer specific settings are introduced below
 
   # How often, in seconds, to read file system events.
-  # Default: 0.2. Minimum is 0.2.
-  config.syncer.interval = 0.2
+  # Default: 0.1. Minimum is 0.01.
+  config.syncer.interval = 0.1
 
   # Whether or not to start rsync-auto after the machine is up, reloaded or
   # resumed.
