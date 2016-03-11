@@ -58,9 +58,9 @@ module Vagrant
             result = Vagrant::Util::Subprocess.execute(*rsync_vagrant_command) do |io_name, data|
               data.each_line do |line|
                 if io_name == :stdout
-                  @logger.success("Rsync: #{line}")
+                  @logger.success("Rsynced: #{line}")
                 elsif io_name == :stderr && !line =~ /Permanently added/
-                  @logger.warn("Rsync: #{line}")
+                  @logger.warn("Rsync stderr'ed: #{line}")
                 end
               end
             end
