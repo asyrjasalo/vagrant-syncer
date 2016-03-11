@@ -45,18 +45,22 @@ values.
 - Vagrant's implementation assumes that the primary group of the SSH user
   has the same name as the user, if rsync option ```group``` is not explicitly
   defined. This plugin queries the user's real primary group from the guest.
-- Hooking Vagrant's ```:rsync_pre``` is removed, as this unnecessarily runs mkdir
-  to create the target directory, which rsync command creates sync-time anyway.
+- Hooking Vagrant's ```:rsync_pre``` is removed, as this unnecessarily runs
+  mkdir to create the target directory, which rsync command creates sync-time
+  anyway.
 - On Windows, expect relative paths, instead of Cygwin style, as Cygwin shall
   not be a requirement.
 - ControlPath settings are not in the default SSH arguments on Windows,
-  as they fail on [Vagrant 1.8.0 and 1.8.1](https://github.com/mitchellh/vagrant/issues/7046).
+  as they fail on
+  [Vagrant 1.8.0 and 1.8.1](https://github.com/mitchellh/vagrant/issues/7046).
+- Hide "permanently added to the known hosts" messages from rsync stderr output.
 - The rsync stdout outputs are all single line by default, and colored.
 
 
 ## Development
 
-Fork this repository, clone it and install Ruby 2.2.3, using e.g. [rbenv](https://github.com/sstephenson/rbenv):
+Fork this repository, clone it and install Ruby 2.2.3, using e.g.
+[rbenv](https://github.com/sstephenson/rbenv):
 
     cd vagrant-syncer
     rbenv install $(cat .ruby-version)
@@ -76,11 +80,15 @@ Also, I kindly take pull requests.
 
 ## Credits
 
-[vagrant-syncer](https://github.com/asyrjasalo/vagrant-syncer) was originally put together by Anssi Syrjäsalo.
+[vagrant-syncer](https://github.com/asyrjasalo/vagrant-syncer) was originally
+put together by Anssi Syrjäsalo.
 
-Thanks to [Steven Merrill's](https://github.com/smerrill) (@stevenmerrill) [vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync)
-for [the listener implementations](https://github.com/smerrill/vagrant-gatling-rsync/tree/master/lib/vagrant-gatling-rsync/listen) and the original idea to tap into [rb-fsevent](https://github.com/thibaudgg/rb-fsevent) (OS X)
-and [rb-inotify](https://github.com/nex3/rb-inotify) (GNU/Linux) for non-CPU hog watching of hierarchies with 10,000-100,000 files.
+Thanks to [Steven Merrill's](https://github.com/smerrill) (@stevenmerrill)
+[vagrant-gatling-rsync](https://github.com/smerrill/vagrant-gatling-rsync) for
+[the listener implementations](https://github.com/smerrill/vagrant-gatling-rsync/tree/master/lib/vagrant-gatling-rsync/listen) and the original idea to tap into [rb-fsevent](https://github.com/thibaudgg/rb-fsevent)
+(OS X) and [rb-inotify](https://github.com/nex3/rb-inotify) (GNU/Linux) for
+non-CPU hog watching of hierarchies with 10,000-100,000 files.
 
-And to [Hashicorp](https://github.com/hashicorp) for [Vagrant](https://github.com/mitchellh/vagrant), even though its
-future will likely be overshadowed by [Otto](https://github.com/hashicorp/otto).
+And to [Hashicorp](https://github.com/hashicorp) for
+[Vagrant](https://github.com/mitchellh/vagrant), even though its future will
+likely be overshadowed by [Otto](https://github.com/hashicorp/otto).
