@@ -18,17 +18,7 @@ module Vagrant
 
           loop do
             directories = Set.new
-            begin
-              loop do
-                events = []
-                events = Timeout::timeout(@settings[:latency]) {
-                  notifier.read_events
-                }
-                events.each { |e| directories << e.absolute_name }
-              end
-            rescue Timeout::Error
-            end
-
+            notifier.read_events.each { |e| directories << e.absolute_name }
             @callback.call(directories.to_a)  unless directories.empty?
           end
         end
