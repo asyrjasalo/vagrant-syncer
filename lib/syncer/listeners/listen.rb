@@ -1,5 +1,4 @@
 require 'listen'
-require 'vagrant/util/busy'
 
 module Vagrant
   module Syncer
