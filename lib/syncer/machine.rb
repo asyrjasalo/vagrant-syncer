@@ -47,7 +47,7 @@ module Vagrant
 
         synced_folders(machine)[:rsync].each do |id, folder_opts|
           @paths << File.expand_path(folder_opts[:hostpath], machine.env.root_path)
-          @excludes << folder_opts[:rsync__excludes]
+          @excludes << folder_opts[:rsync__excludes]  if folder_opts[:rsync__excludes]
           @syncers << Syncers::Rsync.new(folder_opts, machine)
         end
 

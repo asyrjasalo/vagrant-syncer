@@ -24,9 +24,11 @@ module Vagrant
         def initialize(paths, excludes, settings, callback)
           @paths = paths
           @settings = settings
-          @callback = callback
+          @callback = Proc.new do |mod, add, rem|
+            callback.call(mod + add + rem)
+          end
 
-          if excludes
+          if excludes.any?
             @settings[:ignore!] = []
             excludes.each do |pattern|
               @settings[:ignore!] << self.class.excludes_to_listen(pattern.to_s)
@@ -35,11 +37,7 @@ module Vagrant
         end
 
         def run
-          listener = ::Listen.to(*@paths, @settings) do |mod, add, rem|
-            @callback.call(mod + add + rem)
-          end
-
-          listener.start
+          ::Listen.to(*@paths, @settings, &@callback).start
           sleep
         end
       end
