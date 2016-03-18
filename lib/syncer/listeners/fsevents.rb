@@ -5,8 +5,8 @@ module Vagrant
     module Listeners
       class FSEvents
 
-        def initialize(absolute_path, excludes, settings, callback)
-          @absolute_path = absolute_path
+        def initialize(paths, excludes, settings, callback)
+          @paths = paths
           @settings = settings.merge!(no_defer: false)
           @callback = callback
           # rb-fsevent does not support excludes.
@@ -15,7 +15,7 @@ module Vagrant
         def run
           changes = Queue.new
           fsevent = FSEvent.new
-          fsevent.watch @absolute_path, @settings do |paths|
+          fsevent.watch @paths, @settings do |paths|
             paths.each { |path| changes << path }
           end
           Thread.new { fsevent.run }

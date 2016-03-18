@@ -21,8 +21,8 @@ module Vagrant
           Regexp.new(pattern)
         end
 
-        def initialize(absolute_path, excludes, settings, callback)
-          @absolute_path = absolute_path
+        def initialize(paths, excludes, settings, callback)
+          @paths = paths
           @settings = settings
           @callback = callback
 
@@ -35,7 +35,7 @@ module Vagrant
         end
 
         def run
-          listener = ::Listen.to(@absolute_path, @settings) do |mod, add, rem|
+          listener = ::Listen.to(*@paths, @settings) do |mod, add, rem|
             @callback.call(mod + add + rem)
           end
 

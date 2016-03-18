@@ -6,15 +6,17 @@ module Vagrant
     module Syncers
       class Rsync
 
+        attr_reader :host_path
+
         def initialize(path_opts, machine)
           @machine = machine
           @logger = machine.ui
 
           @machine_path = machine.env.root_path.to_s
           @host_path = parse_host_path(path_opts[:hostpath])
+          @rsync_verbose = path_opts[:rsync__verbose] || false
           @rsync_args = parse_rsync_args(path_opts[:rsync__args],
             path_opts[:rsync__rsync_path])
-          @rsync_verbose = path_opts[:rsync__verbose] || false
           @ssh_command = parse_ssh_command(machine.config.syncer.ssh_args)
           @exclude_args = parse_exclude_args(path_opts[:rsync__exclude])
 

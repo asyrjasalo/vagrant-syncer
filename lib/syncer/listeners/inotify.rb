@@ -5,8 +5,8 @@ module Vagrant
     module Listeners
       class INotify
 
-        def initialize(absolute_path, excludes, settings, callback)
-          @absolute_path = absolute_path
+        def initialize(paths, excludes, settings, callback)
+          @paths = paths
           @settings = settings
           @callback = callback
           # rb-inotify does not support excludes.
@@ -14,7 +14,10 @@ module Vagrant
 
         def run
           notifier = ::INotify::Notifier.new
-          notifier.watch(@absolute_path, :modify, :create, :delete, :recursive) {}
+
+          @paths.each do |path|
+            notifier.watch(path, :modify, :create, :delete, :recursive) {}
+          end
 
           loop do
             directories = Set.new

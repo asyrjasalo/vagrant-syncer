@@ -6,7 +6,6 @@ end
 
 require 'syncer/actions'
 require 'syncer/machine'
-require 'syncer/path'
 require 'syncer/plugin'
 require 'syncer/version'
 
