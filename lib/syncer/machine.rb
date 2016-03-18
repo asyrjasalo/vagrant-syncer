@@ -9,17 +9,7 @@ module Vagrant
       def initialize(machine, polling=false)
         @paths = []
 
-        cached = synced_folders(machine, cached: true)
-        fresh  = synced_folders(machine)
-        diff   = synced_folders_diff(cached, fresh)
-        if !diff[:added].empty?
-          machine.ui.warn(I18n.t("vagrant.rsync_auto_new_folders"))
-        end
-
-        folders = cached[:rsync]
-        return unless folders
-
-        folders.each do |id, folder_opts|
+        synced_folders(machine)[:rsync].each do |id, folder_opts|
           @paths << Path.new(folder_opts, machine, polling)
         end
       end
