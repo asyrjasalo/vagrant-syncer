@@ -124,7 +124,7 @@ module Vagrant
           rsync_args ||= ["--archive", "--delete", "--compress", "--copy-links"]
 
           # This implies --verbose, set nicer output by default
-          rsync_args.unshift("--out-format=%L%n")  if @rsync_verbose
+          rsync_args.unshift("--out-format=%L/%f")  if @rsync_verbose
 
           rsync_chmod_args_given = rsync_args.any? { |arg|
             arg.start_with?("--chmod=")
