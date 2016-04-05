@@ -14,7 +14,9 @@ module Vagrant
 
           # If vagrant up/reload/resume exited successfully, run rsync-auto.
           at_exit do
-            env[:machine].env.cli("rsync-auto")  if $!.status == 0
+            if $! && $!.status == 0
+              env[:machine].env.cli("rsync-auto")
+            end
           end
         end
       end
