@@ -37,6 +37,8 @@ module Vagrant
           argv = parse_options(opts)
           return if !argv
 
+          listener_threads = []
+
           # Build up the paths that we need to listen to.
           with_target_vms(argv) do |machine|
             if machine.provider.capability?(:proxy_machine)
@@ -53,8 +55,9 @@ module Vagrant
 
             machine = Machine.new(machine, options[:poll])
             machine.full_sync
-            machine.listen
+            listener_threads << Thread.new { machine.listen }
           end
+          listener_threads.each { |t| t.join }
         end
       end
     end
