@@ -53,7 +53,7 @@ module Vagrant
               end
             end
 
-            next if synced_folders(machine)[:rsync].empty?
+            next  unless synced_folders(machine)[:rsync]
 
             machine = Machine.new(machine, options[:poll])
             machine.full_sync
