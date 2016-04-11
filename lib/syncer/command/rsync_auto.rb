@@ -53,6 +53,8 @@ module Vagrant
               end
             end
 
+            next if synced_folders(machine)[:rsync].empty?
+
             machine = Machine.new(machine, options[:poll])
             machine.full_sync
             listener_threads << Thread.new { machine.listen }

@@ -44,6 +44,8 @@ module Vagrant
               end
             end
 
+            next if synced_folders(machine)[:rsync].empty?
+
             if !machine.communicate.ready?
               machine.ui.error(I18n.t("vagrant.rsync_communicator_not_ready"))
               error = true
