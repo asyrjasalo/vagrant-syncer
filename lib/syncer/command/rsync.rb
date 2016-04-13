@@ -30,7 +30,6 @@ module Vagrant
           return if !argv
 
           # Go through each machine and perform full sync.
-          error = false
           with_target_vms(argv) do |machine|
             if machine.provider.capability?(:proxy_machine)
               proxy = machine.provider.capability(:proxy_machine)
@@ -45,17 +44,10 @@ module Vagrant
             end
 
             next if synced_folders(machine)[:rsync].empty?
-
-            if !machine.communicate.ready?
-              machine.ui.error(I18n.t("vagrant.rsync_communicator_not_ready"))
-              error = true
-              next
-            end
-
             Machine.new(machine).full_sync
           end
 
-          return error ? 1 : 0
+          0
         end
       end
     end
