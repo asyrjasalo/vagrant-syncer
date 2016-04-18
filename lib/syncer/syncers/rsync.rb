@@ -34,8 +34,10 @@ module Vagrant
             owner: path_opts[:owner],
             group: path_opts[:group]
           }
-          @vagrant_rsync_opts[:chown] ||= true
-          @vagrant_rsync_opts[:owner] ||= ssh_username
+
+          @vagrant_rsync_opts[:chown] = true  if @vagrant_rsync_opts[:chown].nil?
+          @vagrant_rsync_opts[:owner] = ssh_username  if @vagrant_rsync_opts[:owner].nil?
+
           if @vagrant_rsync_opts[:group].nil?
             machine.communicate.execute('id -gn') do |type, output|
               @vagrant_rsync_opts[:group] = output.chomp  if type == :stdout
