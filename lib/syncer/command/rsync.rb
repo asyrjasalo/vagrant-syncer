@@ -27,7 +27,7 @@ module Vagrant
 
           # Parse the options and return if we don't have any target.
           argv = parse_options(opts)
-          return if !argv
+          return  unless argv
 
           # Go through each machine and perform full sync.
           with_target_vms(argv) do |machine|
@@ -43,11 +43,13 @@ module Vagrant
               end
             end
 
-            next if synced_folders(machine)[:rsync].empty?
+            next  unless machine.communicate.ready?
+            next  unless synced_folders(machine)[:rsync]
+
             Machine.new(machine).full_sync
           end
 
-          0
+          return 0
         end
       end
     end

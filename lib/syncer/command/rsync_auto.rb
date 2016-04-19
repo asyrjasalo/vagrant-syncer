@@ -35,7 +35,7 @@ module Vagrant
 
           # Parse the options and return if we don't have any target.
           argv = parse_options(opts)
-          return if !argv
+          return  unless argv
 
           listener_threads = []
 
@@ -53,15 +53,16 @@ module Vagrant
               end
             end
 
+            next  unless machine.communicate.ready?
             next  unless synced_folders(machine)[:rsync]
 
-            if machine.ssh_info
-              machine = Machine.new(machine, options[:poll])
-              machine.full_sync
-              listener_threads << Thread.new { machine.listen }
-            end
+            machine = Machine.new(machine, options[:poll])
+            machine.full_sync
+            listener_threads << Thread.new { machine.listen }
           end
           listener_threads.each { |t| t.join }
+
+          return 0
         end
       end
     end
