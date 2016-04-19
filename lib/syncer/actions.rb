@@ -14,11 +14,12 @@ module Vagrant
           return  unless env[:machine].config.syncer.run_on_startup
           return  if @exit_registered
 
-          # If vagrant up/reload/resume exited successfully, run rsync-auto.
           at_exit do
-            if $! && $!.status == 0
-              env[:machine].env.cli("rsync-auto")
-            end
+            exit_status = $!.status
+            exit exit_status  if exit_status != 0
+
+            # If vagrant up/reload/resume exited successfully, run rsync-auto.
+            env[:machine].env.cli("rsync-auto")
           end
 
           @exit_registered = true
