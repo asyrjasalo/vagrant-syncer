@@ -1,9 +1,9 @@
 en:
   syncer:
     states:
-      initial: "Rsyncing %{path}"
-      watching: "Watching %{path} (using %{listener}) every %{interval} seconds."
-      polling: "Polling %{path} (using %{listener}) every %{interval} seconds."
+      initial: "Rsyncing %{host_path} -> %{guest_path} get it up to date."
+      watching: "Watching %{host_path} (using %{listener}) every %{interval} seconds."
+      polling: "Polling %{host_path} (using %{listener}) every %{interval} seconds."
     rsync:
       failed: "Rsync failed: %{error}"
       failed_command: "The failed command was: %{command}"

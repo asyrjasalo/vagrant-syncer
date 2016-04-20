@@ -65,7 +65,11 @@ module Vagrant
 
       def full_sync
         @syncers.each do |syncer|
-          syncer.sync([syncer.host_path])
+          @logger.info(I18n.t('syncer.states.initial', {
+            host_path: syncer.host_path,
+            guest_path: syncer.guest_path
+          }))
+          syncer.sync([syncer.host_path], initial=true)
         end
       end
 
@@ -73,7 +77,7 @@ module Vagrant
         text = @listener_polling ? 'syncer.states.polling' : 'syncer.states.watching'
         @paths.each do |path|
           @logger.info(I18n.t(text, {
-            path: path,
+            host_path: path,
             listener: @listener_name,
             interval: @listener_interval
           }))

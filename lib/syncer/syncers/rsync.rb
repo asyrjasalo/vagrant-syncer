@@ -6,7 +6,7 @@ module Vagrant
     module Syncers
       class Rsync
 
-        attr_reader :host_path
+        attr_reader :host_path, :guest_path
 
         def initialize(path_opts, machine)
           @machine = machine
@@ -14,6 +14,7 @@ module Vagrant
 
           @machine_path = machine.env.root_path.to_s
           @host_path = parse_host_path(path_opts[:hostpath])
+          @guest_path = path_opts[:guestpath]
           @rsync_verbose = path_opts[:rsync__verbose] || false
           @rsync_args = parse_rsync_args(path_opts[:rsync__args],
             path_opts[:rsync__rsync_path])
@@ -22,14 +23,14 @@ module Vagrant
 
           ssh_username = machine.ssh_info[:username]
           ssh_host = machine.ssh_info[:host]
-          @ssh_target = "#{ssh_username}@#{ssh_host}:#{path_opts[:guestpath]}"
+          @ssh_target = "#{ssh_username}@#{ssh_host}:#{@guest_path}"
 
           @vagrant_command_opts = {
             workdir: @machine_path
           }
 
           @vagrant_rsync_opts = {
-            guestpath: path_opts[:guestpath],
+            guestpath: @guest_path,
             chown: path_opts[:rsync__chown],
             owner: path_opts[:owner],
             group: path_opts[:group]
@@ -45,7 +46,7 @@ module Vagrant
           end
         end
 
-        def sync(changed_paths=[])
+        def sync(changed_paths=[], initial=false)
           rsync_command = [
             "rsync",
             @rsync_args,
@@ -57,7 +58,7 @@ module Vagrant
           ].flatten
 
           rsync_vagrant_command = rsync_command + [@vagrant_command_opts]
-          if @rsync_verbose
+          if !initial && @rsync_verbose
             @vagrant_command_opts[:notify] = [:stdout, :stderr]
             result = Vagrant::Util::Subprocess.execute(*rsync_vagrant_command) do |io_name, data|
               data.each_line do |line|
