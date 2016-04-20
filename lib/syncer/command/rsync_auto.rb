@@ -56,9 +56,9 @@ module Vagrant
             next  unless machine.communicate.ready?
             next  unless synced_folders(machine)[:rsync]
 
-            machine = Machine.new(machine, options[:poll])
-            machine.full_sync
-            listener_threads << Thread.new { machine.listen }
+            target_machine = Machine.new(machine, options[:poll])
+            target_machine.full_sync  if machine.ssh_info
+            listener_threads << Thread.new { target_machine.listen }
           end
           listener_threads.each { |t| t.join }
 
