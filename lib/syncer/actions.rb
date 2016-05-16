@@ -15,10 +15,9 @@ module Vagrant
           return  if @exit_registered
 
           at_exit do
-            if $!
-              exit_status = $!.status
-              exit exit_status  if exit_status != 0
-            end
+            exit 1  unless $!.is_a?(SystemExit)
+            exit_status = $!.status
+            exit exit_status  if exit_status != 0
 
             # If vagrant up/reload/resume exited successfully, run rsync-auto.
             env[:machine].env.cli("rsync-auto")
