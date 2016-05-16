@@ -64,8 +64,11 @@ module Vagrant
         paths = []
         listener_excludes = []
         @rsync_synced_folders.each do |id, folder_opts|
-          paths << File.expand_path(folder_opts[:hostpath], @machine.env.root_path)
-          listener_excludes << folder_opts[:rsync__excludes]  if folder_opts[:rsync__excludes]
+          paths << File.expand_path(folder_opts[:hostpath],
+            @machine.env.root_path)
+          if folder_opts[:rsync__excludes]
+            listener_excludes << folder_opts[:rsync__excludes]
+          end
         end
 
         listener_name = listener_class.to_s.gsub(/^.*::/, '')
