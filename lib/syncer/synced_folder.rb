@@ -41,7 +41,9 @@ module Vagrant
           machine.ui.warn(I18n.t("vagrant.rsync_ssh_password"))
         end
 
-        Machine.new(machine).full_sync
+        unless machine.config.syncer.disable_up_rsync
+          Machine.new(machine).full_sync
+        end
       end
     end
   end

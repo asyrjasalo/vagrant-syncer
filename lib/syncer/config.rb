@@ -3,6 +3,7 @@ module Vagrant
     class Config < Vagrant.plugin(2, :config)
 
       attr_accessor \
+        :disable_up_rsync,
         :force_listen_gem,
         :interval,
         :run_on_startup,
@@ -10,6 +11,7 @@ module Vagrant
         :ssh_args
 
       def initialize
+        @disable_up_rsync = UNSET_VALUE
         @force_listen_gem = UNSET_VALUE
         @interval         = UNSET_VALUE
         @run_on_startup   = UNSET_VALUE
@@ -18,6 +20,7 @@ module Vagrant
       end
 
       def finalize!
+        @disable_up_rsync = false  if @disable_up_rsync == UNSET_VALUE
         @force_listen_gem = false  if @force_listen_gem == UNSET_VALUE
         @interval = 0.1          if @interval == UNSET_VALUE || @interval < 0.01
         @run_on_startup = true   if @run_on_startup == UNSET_VALUE
