@@ -37,7 +37,7 @@ module Vagrant
           argv = parse_options(opts)
           return  unless argv
 
-          listener_threads = []
+          machine_threads = []
 
           # Build up the paths that we need to listen to.
           with_target_vms(argv) do |machine|
@@ -58,13 +58,13 @@ module Vagrant
 
             if machine.ssh_info
               target_machine = Machine.new(machine)
-              target_machine.full_sync
-              listener_threads << Thread.new do
+              machine_threads << Thread.new do
+                target_machine.full_sync
                 target_machine.listen(options[:poll])
               end
             end
           end
-          listener_threads.each { |t| t.join }
+          machine_threads.each { |t| t.join }
 
           return 0
         end
