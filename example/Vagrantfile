@@ -8,13 +8,14 @@ Vagrant.configure(2) do |config|
   config.vm.box_check_update = false
   config.vbguest.auto_update = false  if Vagrant.has_plugin?("vagrant-vbguest")
 
-  config.vm.define 'master', primary: true
-  config.vm.define 'slave', autostart: false
+  config.ssh.username = 'vagrant'
+  config.ssh.forward_agent = true
 
   config.vm.network 'private_network', type: 'dhcp'
 
   config.vm.synced_folder '.', '/vagrant', disabled: true
 
+  # Sync 'dotfiles' to master and slave
   config.vm.synced_folder "dotfiles", "/home/vagrant", type: 'rsync',
     rsync__args: [
       "--archive",
@@ -22,25 +23,28 @@ Vagrant.configure(2) do |config|
     ],
     rsync__verbose: true
 
-  config.vm.synced_folder "files", "/home/vagrant/files", type: 'rsync',
-    rsync__args: [
-      "--archive",
-      "--delete",
-      "--force",
-      "--numeric-ids"
-    ],
-    rsync__exclude: [
-      "/excluded_file.txt",
-      "/excluded_directory",
-      "excluded_nested_file.txt",
-      "excluded_nested_directory",
-      "*.not",
-      ".git"
-    ],
-    rsync__verbose: true
+  # Additionally, sync 'files' to master
+  config.vm.define 'master' do |master|
+    master.vm.synced_folder "files", "/home/vagrant/files", type: 'rsync',
+      rsync__args: [
+        "--archive",
+        "--delete",
+        "--force",
+        "--numeric-ids"
+      ],
+      rsync__exclude: [
+        "/excluded_file.txt",
+        "/excluded_directory",
+        "excluded_nested_file.txt",
+        "excluded_nested_directory",
+        "*.not",
+        ".git"
+      ],
+      rsync__verbose: true
+  end
 
-  config.ssh.username = 'vagrant'
-  config.ssh.forward_agent = true
+  # Thus, slave has 'dotfiles' only
+  config.vm.define 'slave', autostart: false
 
 
   ### Vagrant syncer specific settings are introduced below
