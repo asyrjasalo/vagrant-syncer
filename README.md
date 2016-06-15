@@ -64,7 +64,7 @@ Fork this repository, clone it and install Ruby 2.2.3, using e.g.
 
     cd vagrant-syncer
     rbenv install $(cat .ruby-version)
-    gem install bundler -v1.10.5
+    gem install bundler -v1.12.5
     bundle install
 
 Then use it with:
