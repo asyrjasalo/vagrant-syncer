@@ -1,5 +1,7 @@
 # vagrant syncer
 
+  **Note: This project is unmaintained, feel free to fork/PR.**
+
   This Vagrant plugin optimizes to the following Vagrant commands to not
   be that CPU hog with large file hierachies:
 
